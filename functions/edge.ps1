@@ -88,7 +88,7 @@ function Invoke-WebViewUninstall {
 }
 
 function Invoke-EdgeInstall {
-    $tmpEdgePath = [System.IO.Directory]::CreateTempSubdirectory().FullName + "\MicrosoftEdgeSetup.exe"
+    $tmpEdgePath = (New-Item -ItemType Directory -Path (Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).ToString("N"))).FullName + "\MicrosoftEdgeSetup.exe"
 
     try {
         Write-Host "Installing Edge ..."
