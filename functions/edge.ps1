@@ -1,4 +1,4 @@
-function Uninstall-EdgeClient {
+function Invoke-EdgeClientUninstall {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Key
@@ -51,12 +51,12 @@ function Uninstall-EdgeClient {
     }
 }
 
-function Uninstall-Edge {
+function Invoke-EdgeBrowserUninstall {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
 
     [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
 
-    Uninstall-EdgeClient -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
+    Invoke-EdgeClientUninstall -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
 
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgePDF" -ErrorAction SilentlyContinue | Out-Null
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeHTM" -ErrorAction SilentlyContinue | Out-Null
@@ -66,14 +66,7 @@ function Uninstall-Edge {
 }
 
 # FIXME: might not work on some systems
-function Uninstall-WebView {
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
-
-    Uninstall-EdgeClient -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
-}
-
-# FIXME: might not work on some systems
-function Uninstall-EdgeUpdate {
+function Invoke-EdgeUpdateUninstall {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
 
     $registryPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
@@ -92,7 +85,14 @@ function Uninstall-EdgeUpdate {
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
 }
 
-function Install-Edge {
+# FIXME: might not work on some systems
+function Invoke-WebViewUninstall {
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+
+    Invoke-EdgeClientUninstall -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+}
+
+function Invoke-EdgeInstall {
     $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
 
     try {
