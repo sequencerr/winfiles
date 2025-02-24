@@ -88,13 +88,13 @@ function Invoke-WebViewUninstall {
 }
 
 function Invoke-EdgeInstall {
-    $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
+    $tmpEdgePath = [System.IO.Directory]::CreateTempSubdirectory().FullName + "\MicrosoftEdgeSetup.exe"
 
     try {
         Write-Host "Installing Edge ..."
-        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
-        Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
-        Remove-item $tempEdgePath
+        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tmpEdgePath
+        Start-Process -FilePath $tmpEdgePath -ArgumentList "/silent /install" -Wait
+        Remove-item $tmpEdgePath
         Write-Host "Edge Installed Successfully"
     } catch {
         Write-Host "Failed to install Edge"
