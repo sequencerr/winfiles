@@ -78,7 +78,7 @@ function Invoke-UpdatesEnable {
     Write-Host "---  Windows Update Settings Reset to Default   ---"
     Write-Host "==================================================="
 
-    Start-Process -FilePath "secedit" -ArgumentList "/configure /cfg $env:windir\inf\defltbase.inf /db defltbase.sdb /verbose" -Wait
+    Start-Process -FilePath "secedit" -ArgumentList "/configure /cfg $env:WinDir\inf\defltbase.inf /db defltbase.sdb /verbose" -Wait
     Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicyUsers" -Wait
     Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicy" -Wait
     Start-Process -FilePath "gpupdate" -ArgumentList "/force" -Wait
