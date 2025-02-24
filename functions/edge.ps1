@@ -61,11 +61,7 @@ function Uninstall-Edge {
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgePDF" -ErrorAction SilentlyContinue | Out-Null
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeHTM" -ErrorAction SilentlyContinue | Out-Null
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeMHT" -ErrorAction SilentlyContinue | Out-Null
-
-    # Remove Edge Polocy reg keys
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
-
-    # Remove Edge reg keys
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
 }
 
@@ -95,8 +91,6 @@ function Uninstall-EdgeUpdate {
     }
 
     Start-Process cmd.exe "/c $uninstallCmdLine" -WindowStyle Hidden -Wait
-
-    # Remove EdgeUpdate reg keys
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
 }
 
