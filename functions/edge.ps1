@@ -1,15 +1,15 @@
 function Invoke-EdgeClientUninstall {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$Key
+        [String]$Key
     )
 
-    $originalNation = [microsoft.win32.registry]::GetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', [Microsoft.Win32.RegistryValueKind]::String)
+    $originalNation = [Microsoft.Win32.Registry]::GetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', [Microsoft.Win32.RegistryValueKind]::String)
 
     # Set Nation to any of the EEA regions temporarily
     # Refer: https://learn.microsoft.com/en-us/windows/win32/intl/table-of-geographical-locations
     $tmpNation = 68 # Ireland
-    [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $tmpNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+    [Microsoft.Win32.Registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $tmpNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
 
     $baseKey = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
     $registryPath = $baseKey + '\ClientState\' + $Key
@@ -21,21 +21,16 @@ function Invoke-EdgeClientUninstall {
 
     # Remove the status flag
     Remove-ItemProperty -Path $baseKey -Name "IsEdgeStableUninstalled" -ErrorAction SilentlyContinue | Out-Null
-
     Remove-ItemProperty -Path $registryPath -Name "experiment_control_labels" -ErrorAction SilentlyContinue | Out-Null
 
     $uninstallString = (Get-ItemProperty -Path $registryPath).UninstallString
     $uninstallArguments = (Get-ItemProperty -Path $registryPath).UninstallArguments
+    $uninstallArguments += " --force-uninstall --delete-profile" # Extra arguments to nuke it
 
-    if ([string]::IsNullOrEmpty($uninstallString) -or [string]::IsNullOrEmpty($uninstallArguments)) {
+    if ([String]::IsNullOrEmpty($uninstallString)) {
         Write-Host "[$Mode] Cannot find uninstall methods for $Mode"
         return
     }
-
-    # Extra arguments to nuke it
-    $uninstallArguments += " --force-uninstall --delete-profile"
-
-    # $uninstallCommand = "`"$uninstallString`"" + $uninstallArguments
     if (!(Test-Path -Path $uninstallString)) {
         Write-Host "[$Mode] setup.exe not found at: $uninstallString"
         return
@@ -43,7 +38,7 @@ function Invoke-EdgeClientUninstall {
     Start-Process -FilePath $uninstallString -ArgumentList $uninstallArguments -Wait -NoNewWindow -Verbose
 
     # Restore Nation back to the original
-    [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $originalNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+    [Microsoft.Win32.Registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $originalNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
 
     # might not exist in some cases
     if ((Get-ItemProperty -Path $baseKey).IsEdgeStableUninstalled -eq 1) {
@@ -54,7 +49,7 @@ function Invoke-EdgeClientUninstall {
 function Invoke-EdgeBrowserUninstall {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
 
-    [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+    [Microsoft.Win32.Registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
 
     Invoke-EdgeClientUninstall -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
 
@@ -63,10 +58,9 @@ function Invoke-EdgeBrowserUninstall {
     Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeMHT" -ErrorAction SilentlyContinue | Out-Null
     Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
-}
 
-# FIXME: might not work on some systems
-function Invoke-EdgeUpdateUninstall {
+    # FIXME: might not work on some systems
+    # function Invoke-EdgeUpdateUninstall
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
 
     $registryPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
@@ -74,9 +68,9 @@ function Invoke-EdgeUpdateUninstall {
         Write-Host "Registry key not found: $registryPath"
         return
     }
-    $uninstallCmdLine = (Get-ItemProperty -Path $registryPath).UninstallCmdLine
 
-    if ([string]::IsNullOrEmpty($uninstallCmdLine)) {
+    $uninstallCmdLine = (Get-ItemProperty -Path $registryPath).UninstallCmdLine
+    if ([String]::IsNullOrEmpty($uninstallCmdLine)) {
         Write-Host "Cannot find uninstall methods for $Mode"
         return
     }
@@ -85,6 +79,7 @@ function Invoke-EdgeUpdateUninstall {
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
 }
 
+# WebView is needed for Visual Studio, Telegram WebApps, and some MS Store Games like Forza
 # FIXME: might not work on some systems
 function Invoke-WebViewUninstall {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
