@@ -1,4 +1,4 @@
-﻿function Uninstall-EdgeClient {
+function Uninstall-EdgeClient {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Key
@@ -104,12 +104,12 @@ function Install-Edge {
     $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
 
     try {
-        write-host "Installing Edge ..."
+        Write-Host "Installing Edge ..."
         Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
         Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
         Remove-item $tempEdgePath
-        write-host "Edge Installed Successfully"
+        Write-Host "Edge Installed Successfully"
     } catch {
-        write-host "Failed to install Edge"
+        Write-Host "Failed to install Edge"
     }
 }
