@@ -79,14 +79,6 @@ function Invoke-EdgeBrowserUninstall {
     Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
 }
 
-# WebView is needed for Visual Studio, Telegram WebApps, and some MS Store Games like Forza
-# FIXME: might not work on some systems
-function Invoke-WebViewUninstall {
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
-
-    Invoke-EdgeClientUninstall -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
-}
-
 function Invoke-EdgeInstall {
     $tmpEdgePath = (New-Item -ItemType Directory -Path (Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).ToString("N"))).FullName + "\MicrosoftEdgeSetup.exe"
 
