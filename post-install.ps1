@@ -3,6 +3,7 @@ Get-ChildItem .\functions\ -File | ForEach-Object { . $_.FullName }
 Invoke-UpdatesDisable
 
 Invoke-EdgeBrowserUninstall
+Invoke-OneDriveUninstall
 
 # Get-AppxPackage -AllUsers | Where-Object { (Get-AppxPackage $_.Name) -ne $null -and !(Get-AppxPackage $_.Name).NonRemovable } | Select Name, PackageFullName | Sort-Object { $_.Name }
 $programs = @(
