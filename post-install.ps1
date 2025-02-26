@@ -54,7 +54,7 @@ $programs = @(
 )
 foreach ($program in $programs) {
     if ($null -eq (Get-AppxPackage -Name $program)) { continue }
-    if ((Get-AppxPackage -Name $program).NonRemovable) { Write-Error "$program is `"NonRemovable`""; return }
+    if ((Get-AppxPackage -Name $program).NonRemovable) { Write-Error "Program $program is `"NonRemovable`""; return }
     Write-Host "Removing $program..."
     Get-AppxPackage -Name $program | Remove-AppxPackage
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online
