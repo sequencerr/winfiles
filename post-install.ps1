@@ -65,3 +65,14 @@ foreach ($ext in $assoc.GetSubKeyNames()) {
     Write-Host "Removing 'Edit with Paint 3D' from context menu for `"$ext`" extension..."
     Remove-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations\$ext\Shell\3D Edit" -Recurse -Force -ErrorAction SilentlyContinue
 }
+
+# Get-WindowsOptionalFeature -Online | ?{ $_.State -eq 'Enabled' } | %{ '"' + $_.FeatureName + '"'}
+$optional = @(
+    "WindowsMediaPlayer"
+    "Internet-Explorer-Optional-amd64"
+)
+foreach ($feat in $optional) {
+    if ("Disabled" -eq (Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }).State) { continue }
+    Write-Host "Removing $feat..."
+    Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+}
