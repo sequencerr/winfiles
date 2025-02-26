@@ -36,6 +36,11 @@ function Invoke-EdgeBrowserUninstall {
         }
     }
 
+    # https://answers.microsoft.com/en-us/microsoftedge/forum/all/blue-icon-ghost-edge-messing-default-programs/363390f2-6b89-4598-a97c-bc61f7b84cf6
+    # /\ little bit different story but got some clues. I had ghost StartMenu and App&Features item
+    # https://github.com/microsoft/winget-cli/discussions/844#discussioncomment-4633738
+    # doesn't work - "Set-NonRemovableAppsPolicy -Online -PackageFamilyName (Get-AppxPackage -Name "Microsoft.MicrosoftEdge" -AllUsers).PackageFamilyName -NonRemovable 0" - https://learn.microsoft.com/en-us/powershell/module/dism/set-nonremovableappspolicy?view=windowsserver2025-ps
+
     Write-Host "Edge Stable has been successfully uninstalled"
 }
 
