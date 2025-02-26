@@ -59,9 +59,9 @@ foreach ($program in $programs) {
     Get-AppxPackage -Name $program | Remove-AppxPackage
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online
 }
-$assoc = Get-Item -Path "HKLM:\Software\Classes\SystemFileAssociations"
+$assoc = Get-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations"
 foreach ($ext in $assoc.GetSubKeyNames()) {
     if ($null -eq $assoc.OpenSubKey("$ext\Shell\3D Edit")) { continue }
     Write-Host "Removing 'Edit with Paint 3D' from context menu for `"$ext`" extension..."
-    Remove-Item -Path "HKLM:\Software\Classes\SystemFileAssociations\$ext\Shell\3D Edit" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations\$ext\Shell\3D Edit" -Recurse -Force -ErrorAction SilentlyContinue
 }
