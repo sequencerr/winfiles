@@ -21,7 +21,7 @@ $programs = @(
     "Microsoft.MicrosoftSolitaireCollection"
     "Microsoft.MicrosoftStickyNotes"
     "Microsoft.MixedReality.Portal"
-    # "Microsoft.MSPaint"
+    "Microsoft.MSPaint" # Paint 3D, not Classic One
     "Microsoft.Office.OneNote"
     "Microsoft.OutlookForWindows"
     "Microsoft.People"
@@ -55,7 +55,13 @@ $programs = @(
 foreach ($program in $programs) {
     if ($null -eq (Get-AppxPackage -Name $program)) { continue }
     if ((Get-AppxPackage -Name $program).NonRemovable) { Write-Error "$program is `"NonRemovable`""; return }
-    Write-Output "Removing $program..."
+    Write-Host "Removing $program..."
     Get-AppxPackage -Name $program | Remove-AppxPackage
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online
+}
+$assoc = Get-Item -Path "HKLM:\Software\Classes\SystemFileAssociations"
+foreach ($ext in $assoc.GetSubKeyNames()) {
+    if ($null -eq $assoc.OpenSubKey("$ext\Shell\3D Edit")) { continue }
+    Write-Host "Removing 'Edit with Paint 3D' from context menu for `"$ext`" extension..."
+    Remove-Item -Path "HKLM:\Software\Classes\SystemFileAssociations\$ext\Shell\3D Edit" -Recurse -Force -ErrorAction SilentlyContinue
 }
