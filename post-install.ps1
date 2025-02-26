@@ -4,7 +4,7 @@ Invoke-UpdatesDisable
 
 Invoke-EdgeBrowserUninstall
 
-Get-AppxPackage -AllUsers | Where-Object { (Get-AppxPackage $_.Name) -ne $null -and !(Get-AppxPackage $_.Name).NonRemovable } | Select Name, PackageFullName | Sort-Object { $_.Name }
+# Get-AppxPackage -AllUsers | Where-Object { (Get-AppxPackage $_.Name) -ne $null -and !(Get-AppxPackage $_.Name).NonRemovable } | Select Name, PackageFullName | Sort-Object { $_.Name }
 $programs = @(
     "Microsoft.BingSearch"
     "Microsoft.BingWeather"
