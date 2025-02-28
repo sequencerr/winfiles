@@ -74,8 +74,10 @@ $optional = @(
 )
 foreach ($feat in $optional) {
     if ("Disabled" -eq (Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }).State) { continue }
-    Write-Host "Removing $feat..."
-    Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+    try {
+        Write-Host "Removing $feat..."
+        Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+    } catch {}
 }
 
 # https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-capabilities-package-servicing-command-line-options?view=windows-11#get-capabilities
@@ -107,5 +109,7 @@ $caps = @(
 )
 foreach ($cap in $caps) {
     # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
-    DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
+    $out = DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
+    if ($out[9] -eq "A Windows capability name was not recognized.") { continue }
+    Write-Host $out
 }
