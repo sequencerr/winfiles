@@ -77,3 +77,35 @@ foreach ($feat in $optional) {
     Write-Host "Removing $feat..."
     Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
 }
+
+# https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-capabilities-package-servicing-command-line-options?view=windows-11#get-capabilities
+# DISM - Deployment Image Servicing and Management
+# DISM /Online /Remove-Capability /CapabilityName:Microsoft.Windows.WordPad~~~~0.0.1.0
+$caps = @(
+    "App.StepsRecorder~~~~0.0.1.0"
+    "App.Support.ContactSupport~~~~0.0.1.0"
+    "App.Support.QuickAssist~~~~0.0.1.0"
+    "Browser.InternetExplorer~~~~0.0.11.0"
+    # "DirectX.Configuration.Database~~~~0.0.1.0"
+    "Hello.Face.18967~~~~0.0.1.0"
+    # "Language.Basic~~~en-US~0.0.1.0"
+    "Language.Handwriting~~~en-US~0.0.1.0"
+    # "Language.OCR~~~en-US~0.0.1.0"
+    # "Language.Speech~~~en-US~0.0.1.0"
+    # "Language.TextToSpeech~~~en-US~0.0.1.0"
+    "MathRecognizer~~~~0.0.1.0"
+    "Media.WindowsMediaPlayer~~~~0.0.12.0"
+    "Microsoft.Windows.MSPaint~~~~0.0.1.0"
+    "Microsoft.Windows.Notepad~~~~0.0.1.0"
+    "Microsoft.Windows.PowerShell.ISE~~~~0.0.1.0"
+    "Microsoft.Windows.WordPad~~~~0.0.1.0"
+    "OneCoreUAP.OneSync~~~~0.0.1.0" # Sync engine used by UWP apps like Mail, Calendar and People.
+    "OpenSSH.Client~~~~0.0.1.0"
+    "Print.Fax.Scan~~~~0.0.1.0"
+    # "Print.Management.Console~~~~0.0.1.0"
+    # "Windows.Client.ShellComponents~~~~0.0.1.0"
+)
+foreach ($cap in $caps) {
+    # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
+    DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
+}

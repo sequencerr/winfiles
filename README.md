@@ -6,3 +6,4 @@
 - https://answers.microsoft.com/en-us/windows/forum/all/uninstall-pre-not-installed-spotify-whatsapp-etc/328d585c-9764-4407-9fac-f57c78b0dade
 - https://learn.microsoft.com/en-us/answers/questions/750757/how-to-uninstall-entire-linkedin-from-windows-10-p
 - https://www.windowscentral.com/how-completely-remove-paint-3d-windows-10
+- https://www.thewindowsclub.com/uninstall-reinstall-microsoft-wordpad-in-windows-10
