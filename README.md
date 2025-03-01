@@ -10,4 +10,5 @@
 - https://superuser.com/a/1419689
 - https://www.elevenforum.com/t/enable-or-disable-font-smoothing-in-windows-11.8476
 - https://github.com/zyedidia/micro
-- https://msfn.org/board/topic/149556-registry-keys-that-control-explorer-folder-view-options/
+- https://msfn.org/board/topic/149556-registry-keys-that-control-explorer-folder-view-options
+- https://windowsloop.com/uninstall-windows-backup-app
