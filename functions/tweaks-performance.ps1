@@ -24,41 +24,41 @@ function Invoke-PerfomanceOptionsDisable {
     -Name "VisualFXSetting" -Value 3 -Type DWord
 
     # This disables the following 8 settings:
-    Write-Host "Animate controls and elements inside windows"
-    Write-Host "Fade or slide menus into view"
-    Write-Host "Fade or slide ToolTips into view"
-    Write-Host "Fade out menu items after clicking"
-    Write-Host "Show shadows under mouse pointer"
-    Write-Host "Show shadows under windows"
-    Write-Host "Slide open combo boxes"
-    Write-Host "Smooth-scroll list boxes"
+    Write-Host 'Disable "Animate controls and elements inside windows"'
+    Write-Host 'Disable "Fade or slide menus into view"'
+    Write-Host 'Disable "Fade or slide ToolTips into view"'
+    Write-Host 'Disable "Fade out menu items after clicking"'
+    Write-Host 'Disable "Show shadows under mouse pointer"'
+    Write-Host 'Disable "Show shadows under windows"'
+    Write-Host 'Disable "Slide open combo boxes"'
+    Write-Host 'Disable "Smooth-scroll list boxes"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
     -Name "UserPreferencesMask" -Value (0x90, 0x12, 0x03, 0x80, 0x10, 0x00, 0x00, 0x00) -Type Binary
-    Write-Host "Animate windows when minimizing and maximizing"
+    Write-Host 'Disable "Animate windows when minimizing and maximizing"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" `
     -Name "MinAnimate" -Value "0"
-    Write-Host "Animations in the taskbar"
+    Write-Host 'Disable "Animations in the taskbar"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "TaskbarAnimations" -Value 0 -Type DWord
-    Write-Host "Enable Peek"
+    Write-Host 'Disable "Enable Peek"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\DWM" `
     -Name "EnableAeroPeek" -Value 0 -Type DWord
-    Write-Host "Save taskbar thumbnail previews"
+    Write-Host 'Disable "Save taskbar thumbnail previews"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\DWM" `
     -Name "AlwaysHibernateThumbnails" -Value 0 -Type DWord
-    Write-Host "Show thumbnails instead of icons"
+    Write-Host 'Enable  "Show thumbnails instead of icons"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "IconsOnly" -Value 0 -Type DWord
-    Write-Host "Show translucent selection rectangle"
+    Write-Host 'Disable "Show translucent selection rectangle"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ListviewAlphaSelect" -Value 0 -Type DWord
-    Write-Host "Show window contents while dragging"
+    Write-Host 'Disable "Show window contents while dragging"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
     -Name "DragFullWindows" -Value "0"
-    Write-Host "Smooth edges of screen fonts"
+    Write-Host 'Enable  "Smooth edges of screen fonts"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
     -Name "FontSmoothing" -Value "2"
-    Write-Host "Use drop shadows for icon labels on the desktop"
+    Write-Host 'Disable "Use drop shadows for icon labels on the desktop"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ListviewShadow" -Value 0 -Type DWord
     Write-Host 'Most of "UserPreferencesMask" may not be displayed as changed until system restart'
