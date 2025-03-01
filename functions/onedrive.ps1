@@ -69,10 +69,7 @@ function Invoke-OneDriveUninstall {
     Set-ItemProperty -Name "Templates"     -Value "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Templates" -Type ExpandString -Path $reg
     Set-ItemProperty -Name "{374DE290-123F-4565-9164-39C4925E467B}" -Value "%USERPROFILE%\Downloads" -Type ExpandString -Path $reg
 
-    Write-Host "Restarting explorer..."
-    taskkill.exe /F /IM "explorer.exe"
-    Start-Process "explorer.exe"
-    Write-Host "Wait for Explorer to complete initialization."
+    Invoke-RestartShell
 }
 
 function Invoke-OneDriveInstall {

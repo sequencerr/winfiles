@@ -37,7 +37,7 @@ function Invoke-EdgeBrowserUninstall {
 }
 
 function Invoke-EdgeInstall {
-    $tmpEdgePath = (New-Item -ItemType Directory -Path (Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).ToString("N"))).FullName + "\MicrosoftEdgeSetup.exe"
+    $tmpEdgePath = New-TempPath + "\MicrosoftEdgeSetup.exe"
 
     try {
         Write-Host "Installing Edge ..."
