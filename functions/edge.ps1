@@ -3,13 +3,10 @@ function Invoke-EdgeBrowserUninstall {
 
     $pathEdgeExe = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe")."(Default)"
 
-    # for some reason needed for uninstaller(UninstallString). without this, uninstaller silently exists
+    # needed for uninstaller
     $pathEdgeUWP = "$env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
     New-Item "$pathEdgeUWP" -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     New-Item "$pathEdgeUWP\MicrosoftEdge.exe" -ErrorAction SilentlyContinue | Out-Null
-
-    # Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev" -Name AllowUninstall -Value '' -ErrorAction SilentlyContinue
-    # Set-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge\EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" -Name experiment_control_labels -Value '' -ErrorAction SilentlyContinue # it was on old versions, instead EdgeUpdateDev.AllowUninstall
 
     $uninstallString = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge").UninstallString + " --force-uninstall --delete-profile"
     Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden -Wait
