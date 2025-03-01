@@ -117,11 +117,10 @@ function Invoke-AppsUninstall {
     }
 
     foreach ($feat in $optional) {
-        if ("Disabled" -eq (Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }).State) { continue }
-        try {
-            Write-Host "Removing $feat..."
-            Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
-        } catch {}
+        $featFound = Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }
+        if ($null -eq $featFound -or "Disabled" -eq $featFound.State) { continue }
+        Write-Host "Removing $feat..."
+        Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
     }
     foreach ($cap in $caps) {
         # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
