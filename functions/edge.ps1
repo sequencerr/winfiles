@@ -47,5 +47,6 @@ function Invoke-EdgeInstall {
         Write-Host "Edge Installed Successfully"
     } catch {
         Write-Host "Failed to install Edge"
+        Write-Error $_ | Select *
     }
 }
