@@ -38,6 +38,10 @@ function Invoke-TaskBarTweaksApply {
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "DisableNotificationCenter" -Value 1 -Type DWord
 
+    Write-Host "TaskBar: Disabling Immersive context menu"
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
+    -Name "NoTrayContextMenu" -Value 1 -Type DWord
+
     Invoke-TaskBarSearchTweak
 
     Invoke-RestartShell
