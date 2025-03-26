@@ -73,14 +73,14 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
 
 function Invoke-StartMenuRecenlyAddedDisable {
     # https://www.tenforums.com/tutorials/104828-enable-disable-recently-added-apps-start-menu-windows-10-a.html
-    Write-Host "StartMenu: Disable `"Recenly Added`""
+    Write-Host 'StartMenu: Disable "Recenly Added"'
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "HideRecentlyAddedApps" -Value 1 -Type DWord
 }
 
 function Invoke-StartMenuAppSuggestionsDisable {
     # https://www.tenforums.com/tutorials/24117-turn-off-app-suggestions-start-windows-10-a.html
-    Write-Host "StartMenu: Disable `"Show Suggestions`""
+    Write-Host 'StartMenu: Disable "Show Suggestions"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-338388Enabled" -Value 0 -Type DWord
 }

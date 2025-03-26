@@ -1,10 +1,10 @@
 # https://learn.microsoft.com/en-us/windows/configuration/taskbar/policy-settings?tabs=taskbar&pivots=windows-10
 
 function Invoke-TaskBarSearchTweak {
-    # Write-Host "TaskBar: Disabling Search: `"Open on hover`""
+    # Write-Host 'TaskBar: Disabling Search: "Open on hover"'
     # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
     # -Name "OpenOnHover" -Value 0 -Type DWord
-    # Write-Host "TaskBar: Disabling Search: `"Show search highlights`""
+    # Write-Host 'TaskBar: Disabling Search: "Show search highlights"'
     # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
     # -Name "ShowDynamicContent" -Value 0 -Type DWord
     # # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" `
