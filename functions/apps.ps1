@@ -126,7 +126,8 @@ function Invoke-AppsUninstall {
         # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
         $out = DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
         if ($out[9] -eq "A Windows capability name was not recognized.") { continue }
-        Write-Host $out
+        Write-Host "Removed $cap."
+        Write-Host $out[-1]
     }
     foreach ($pkg in $pkgs) {
         Write-Host "Removing $pkg..."
