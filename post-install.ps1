@@ -1,7 +1,7 @@
 # Self-elevating administrator rights https://stackoverflow.com/a/63344749
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal] $identity
-if(-not $principal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator )) {
+if (-not $principal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator )) {
     $self = "-NoProfile -NoLogo -NoExit -File `"$($MyInvocation.MyCommand.Path)`" `"$($MyInvocation.MyCommand.UnboundArguments)`""
     Start-Process -PassThru -FilePath PowerShell.exe -Verb Runas -ArgumentList $self
     # Exiting PowerShell Terminal. https://stackoverflow.com/a/74359978
