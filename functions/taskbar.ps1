@@ -40,7 +40,5 @@ function Invoke-TaskBarTweaksApply {
 
     Invoke-TaskBarSearchTweak
 
-    # Write-Host "TaskBar: Hiding Meet"
-
     Invoke-RestartShell
 }
