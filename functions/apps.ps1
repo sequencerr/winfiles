@@ -116,22 +116,49 @@ function Invoke-AppsUninstall {
         Remove-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations\$ext\Shell\3D Edit" -Recurse -Force -ErrorAction SilentlyContinue
     }
 
+    $jobs = @()
     foreach ($feat in $optional) {
-        $featFound = Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }
-        if ($null -eq $featFound -or "Disabled" -eq $featFound.State) { continue }
-        Write-Host "Removing $feat..."
-        Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+        $job = Start-Job -ArgumentList $feat -ScriptBlock {
+            PARAM ($feat)
+
+            $featFound = Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }
+            if ($null -eq $featFound -or "Disabled" -eq $featFound.State) { return }
+            Write-Host "Removing $feat..."
+            Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+        }
+        Write-Host "$($job.Name) Started for feature: $feat"
+        $jobs += $job
     }
+
     foreach ($cap in $caps) {
-        # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
-        $out = DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
-        if ($out[9] -eq "A Windows capability name was not recognized.") { continue }
-        Write-Host "Removed $cap."
-        Write-Host $out[-1]
+        $job = Start-Job -ArgumentList $cap -ScriptBlock {
+            PARAM ($cap)
+
+            # DISM /Online /Get-CapabilityInfo /CapabilityName:"$cap"
+            $out = DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
+            if ($out[9] -eq "A Windows capability name was not recognized.") { return }
+            Write-Host "Removed $cap.`n$($out[-1])"
+        }
+        Write-Host "$($job.Name) Started for capability: $cap"
+        $jobs += $job
     }
+
     foreach ($pkg in $pkgs) {
-        Write-Host "Removing $pkg..."
-        Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+        $job = Start-Job -ArgumentList $pkg -ScriptBlock {
+            PARAM ($pkg)
+
+            Write-Host "Removing $pkg..."
+            Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+        }
+        Write-Host "$($job.Name) Started for package: $pkg"
+        $jobs += $job
+    }
+
+    if ($jobs.Count -gt 0) {
+        Write-Host "Waiting $($jobs.Count) jobs..."
+        Wait-Job -Job $jobs | Out-Null
+        Write-Host "Stopping $($jobs.Count) jobs..."
+        Remove-Job -Job $jobs
     }
 
     Invoke-EdgeBrowserUninstall
