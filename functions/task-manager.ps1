@@ -26,10 +26,10 @@ function Invoke-TaskManagerTweaksApply {
 
     Write-Host 'Task Manager: Hide "Status" column'
     $prefsBinary[251] = 0x01
-    Write-Host 'Task Manager: Show "Command line" column'
-    $prefsBinary[475] = 0x00
     Write-Host 'Task Manager: Hide "Power usage" column'
     $prefsBinary[867] = 0x09
+    Write-Host 'Task Manager: Show "Command line" column'
+    $prefsBinary[475] = 0x00
     # Each column index must be reassigned to change single column position
     $i = 1
     $prefsBinary[464+56*0] = 6
