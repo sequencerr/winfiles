@@ -1,0 +1,60 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start development",
+			"type": "shell",
+			"command": "while true; do [ -z \"$(git diff ~/Desktop/dotfiles-win/ $XDG_DATA_HOME/dockur-windows/shared/dotfiles-win/)\" ] || rsync -avz --delete --no-perms --info=progress2 ~/Desktop/dotfiles-win ~/.local/share/dockur-windows/shared/ && sleep 0.1; done",
+			"group": "none",
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated"
+			},
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"options": {
+				"shell": {
+					"args": ["-c", "-l"]
+				}
+			}
+		},
+		{
+			"label": "Spin up Windows 10 VM",
+			"type": "shell",
+			// docker: unknown server OS:
+
+			// Run 'docker run --help' for more information
+			// ?????
+			"command": "docker run -it --rm \
+--device=/dev/kvm \
+--device=/dev/net/tun \
+--cap-add NET_ADMIN \
+--stop-timeout 120 \
+-e VERSION=10 \
+-e REMOVE=N \
+-e DISK_SIZE=32G \
+-p 8006:8006 \
+-p 3389:3389/tcp \
+-p 3389:3389/udp \
+-v $XDG_DATA_HOME/dockur-windows/persistent:/storage \
+-v $XDG_DATA_HOME/dockur-windows/shared:/data \
+--name windows dockurr/windows:4.26",
+			"group": "none",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"runOptions": {
+				// "runOn": "folderOpen"
+			},
+			"options": {
+				"shell": {
+					"args": ["-c", "-l"]
+				}
+			}
+		}
+	]
+}
