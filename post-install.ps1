@@ -16,5 +16,6 @@ Invoke-UpdatesDisable
 Invoke-AppsUninstall
 Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
-Invoke-PerfomanceOptionsDisable
 Invoke-TaskManagerTweaksApply
+Invoke-ExplorerTweaksApply
+Invoke-PerfomanceOptionsDisable
