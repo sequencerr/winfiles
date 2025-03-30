@@ -105,6 +105,7 @@ function Invoke-ExplorerAdvancedSettingsApply {
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "FolderContentsInfoTip" -Value 1 -Type DWord
     Write-Host "Enable:  `"Display the full path in the title bar`" (on tabs)"
+    if (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState")) { New-Item -Force -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" }
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" `
     -Name "FullPath" -Value 1 -Type DWord
     Write-Host "Disable: `"Hidden files and folders`" -> `"Dont show hidden files, folders, or drives`""
