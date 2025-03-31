@@ -2,6 +2,7 @@
 # https://learn.microsoft.com/en-us/answers/questions/1502040/how-to-correctly-find-the-downloads-folder-in-powe
 # https://www.winhelponline.com/blog/show-recently-used-files-in-quick-access-unchecked-automatically/
 # https://www.tenforums.com/tutorials/2712-add-remove-frequent-folders-quick-access-windows-10-a.html
+# https://msfn.org/board/topic/149556-registry-keys-that-control-explorer-folder-view-options/page/2/
 # https://stackoverflow.com/questions/4491999/configure-windows-explorer-folder-options-through-powershell
 # https://winaero.com/how-to-change-file-explorer-options-in-the-registry/
 # https://www.howtogeek.com/222057/how-to-remove-the-folders-from-this-pc-on-windows-10/

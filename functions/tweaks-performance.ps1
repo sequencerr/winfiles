@@ -1,3 +1,6 @@
+# https://superuser.com/a/1419689
+# https://www.elevenforum.com/t/enable-or-disable-font-smoothing-in-windows-11.8476
+
 # SystemPropertiesPerformance.exe
 
 # Animate controls and elements inside windows
