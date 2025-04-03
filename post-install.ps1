@@ -40,6 +40,9 @@ if (Get-WURebootStatus -Silent) {
     exit
 }
 
+Write-Host "Unregistering scheduled task..."
+Unregister-ScheduledTask -TaskName "ResumeWorkflow" -Confirm:$False -ErrorAction SilentlyContinue
+
 Write-Host "Sourcing individual functions..."
 Set-Location "$($MyInvocation.MyCommand.Path | Split-Path -Parent)"
 Get-ChildItem .\functions\util -File | ForEach-Object { . $_.FullName }
