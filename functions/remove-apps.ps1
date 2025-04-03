@@ -101,7 +101,6 @@ $caps = @(
 $pkgsMatch = @(
     "Microsoft-Windows-UserExperience-Desktop-Package~31bf3856ad364e35~" # Windows Backup App
 )
-$pkgsAll = Get-WindowsPackage -Online | ForEach-Object { $_.PackageName }
 
 function Invoke-AppsUninstall {
     foreach ($program in $programs) {
@@ -132,10 +131,12 @@ function Invoke-AppsUninstall {
     }
 
     foreach ($pkgStart in $pkgsMatch) {
-        $pkg = $pkgsAll | Where-Object { $_.StartsWith($pkgStart) }
-        if ($null -eq $pkg) { continue }
-        Write-Host "Removing $pkg..."
-        Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+        foreach ($pkgObj in Get-WindowsPackage -Online) {
+            $pkg = $pkgObj.PackageName
+            if (!$pkg.StartsWith($pkgStart)) { continue }
+            Write-Host "Removing $pkg..."
+            Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+        }
     }
 
     Invoke-EdgeBrowserUninstall
