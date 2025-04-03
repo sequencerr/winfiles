@@ -11,8 +11,8 @@ if (-not $principal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administr
 Write-Host "Installing updates..."
 if (!(Test-Path "~\PowerShell-Help-Updates")) {
     Update-Help -Force -ErrorAction SilentlyContinue
-    New-Item "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
-    Save-Help -DestinationPath "~\PowerShell-Help-Updates"
+    New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
+    Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
 }
 Install-PackageProvider -Name NuGet -Force
 Install-Module -Name PSWindowsUpdate -Force
