@@ -47,10 +47,10 @@ Get-ChildItem .\functions -File | ForEach-Object { . $_.FullName }
 
 Write-Host "Starting functions execution..."
 Invoke-UpdatesDisable
+Invoke-TaskManagerTweaksApply
 Invoke-AppsUninstall
 Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
-Invoke-TaskManagerTweaksApply
 Invoke-ExplorerTweaksApply
 Invoke-PerfomanceOptionsDisable
 
