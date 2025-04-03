@@ -54,4 +54,4 @@ Invoke-TaskManagerTweaksApply
 Invoke-ExplorerTweaksApply
 Invoke-PerfomanceOptionsDisable
 
-# Restart-Computer
+Restart-Computer
