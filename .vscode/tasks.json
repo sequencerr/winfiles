@@ -6,7 +6,7 @@
 		{
 			"label": "Start development",
 			"type": "shell",
-			"command": "while true; do [ -z \"$(diff -r ~/Desktop/dotfiles-win/ $XDG_DATA_HOME/dockur-windows/shared/dotfiles-win/)\" ] || rsync -avz --delete --no-perms --info=progress2 ~/Desktop/dotfiles-win ~/.local/share/dockur-windows/shared/ && sleep 0.1; done",
+			"command": "while true; do [ -z \"$(diff -r ~/Desktop/dotfiles-win/ ~/.local/share/dockur-windows/shared/dotfiles-win/)\" ] || rsync -avz --delete --no-perms --info=progress2 ~/Desktop/dotfiles-win ~/.local/share/dockur-windows/shared/ && sleep 0.1; done",
 			"group": "none",
 			"presentation": {
 				"reveal": "silent",
