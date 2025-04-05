@@ -1,3 +1,51 @@
+# https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
+# https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj574130(v=ws.11)
+function Install-WindowsUpdatesAndReboot {
+    PARAM($scriptPath)
+
+    Write-Host "Installing updates..."
+    if (!(Test-Path "~\PowerShell-Help-Updates")) {
+        Update-Help -Force -ErrorAction SilentlyContinue
+        New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
+        Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
+    }
+    Install-PackageProvider -Name NuGet -Force
+    Install-Module -Name PSWindowsUpdate -Force
+    Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot # We'll reboot later if needed
+    Delete-DeliveryOptimizationCache -Force
+
+    if (!(Get-WURebootStatus -Silent)) { return }
+
+    # Just in case. Make sure the action is overwritten.
+    if (Get-ScheduledTask -TaskName "ResumeWorkflow" -ErrorAction SilentlyContinue) {
+        Write-Host "Unregistering scheduled task..."
+        Unregister-ScheduledTask -TaskName "ResumeWorkflow" -Confirm:$False -ErrorAction SilentlyContinue
+    }
+    $ScriptBlock = {
+        # First things first. Unregister for consequent reboots.
+        if (Get-ScheduledTask -TaskName "ResumeWorkflow" -ErrorAction SilentlyContinue) {
+            Write-Host "Unregistering scheduled task..."
+            Unregister-ScheduledTask -TaskName "ResumeWorkflow" -Confirm:$False -ErrorAction SilentlyContinue
+        }
+        & "$scriptPath"
+    }
+    $EncodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes(
+        $ScriptBlock.ToString().Replace("`$scriptPath", "$scriptPath")
+    ))
+
+    $PowerShellArguments = "-WindowStyle Maximized -NoExit -NoProfile -NoLogo -ExecutionPolicy Bypass -EncodedCommand `"$EncodedCommand`""
+    $PowerShellExecutable = [Diagnostics.Process]::GetCurrentProcess().Path
+    $Action = New-ScheduledTaskAction -Execute $PowerShellExecutable -Argument $PowerShellArguments
+
+    $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -WakeToRun
+    $Trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+
+    Register-ScheduledTask -TaskName "ResumeWorkflow" -Action $Action -Settings $Settings -Trigger $Trigger -User $env:USERNAME -RunLevel Highest
+
+    Restart-Computer
+    exit
+}
+
 function Invoke-UpdatesDisable {
     <#
 

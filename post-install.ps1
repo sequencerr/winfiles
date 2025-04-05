@@ -8,41 +8,6 @@ if (-not $principal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administr
     return [System.Environment]::Exit(0)
 }
 
-Write-Host "Installing updates..."
-if (!(Test-Path "~\PowerShell-Help-Updates")) {
-    Update-Help -Force -ErrorAction SilentlyContinue
-    New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
-    Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
-}
-Install-PackageProvider -Name NuGet -Force
-Install-Module -Name PSWindowsUpdate -Force
-Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot # We'll reboot later if needed
-Delete-DeliveryOptimizationCache -Force
-
-if (Get-WURebootStatus -Silent) {
-    # https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
-    # https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj574130(v=ws.11)?redirectedfrom=MSDN
-    if (Get-ScheduledTask -TaskName "ResumeWorkflow" -ErrorAction SilentlyContinue) {
-        Write-Host "Unregistering scheduled task..."
-        Unregister-ScheduledTask -TaskName "ResumeWorkflow" -Confirm:$False -ErrorAction SilentlyContinue
-    }
-
-    $PowerShellArguments = "-WindowStyle Maximized -NoExit -NoProfile -NoLogo -ExecutionPolicy Bypass -File `"$($MyInvocation.MyCommand.Path)`""
-    $PowerShellExecutable = [Diagnostics.Process]::GetCurrentProcess().Path
-    $Action = New-ScheduledTaskAction -Execute $PowerShellExecutable -Argument $PowerShellArguments
-
-    $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -WakeToRun
-    $Trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-
-    Register-ScheduledTask -TaskName "ResumeWorkflow" -Action $Action -Settings $Settings -Trigger $Trigger -User $env:USERNAME -RunLevel Highest
-
-    Restart-Computer
-    exit
-}
-
-Write-Host "Unregistering scheduled task..."
-Unregister-ScheduledTask -TaskName "ResumeWorkflow" -Confirm:$False -ErrorAction SilentlyContinue
-
 Write-Host "Sourcing individual functions..."
 Set-Location "$($MyInvocation.MyCommand.Path | Split-Path -Parent)"
 Get-ChildItem .\functions\util -File | ForEach-Object { . $_.FullName }
@@ -56,5 +21,6 @@ Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
 Invoke-ExplorerTweaksApply
 Invoke-PerfomanceOptionsDisable
+Install-WindowsUpdatesAndReboot "$($MyInvocation.MyCommand.Path)"
 
 Restart-Computer
