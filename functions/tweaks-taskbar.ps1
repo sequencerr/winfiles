@@ -1,4 +1,8 @@
 # https://learn.microsoft.com/en-us/windows/configuration/taskbar/policy-settings?tabs=taskbar&pivots=windows-10
+# https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/customize-the-taskbar
+# https://www.tenforums.com/tutorials/5313-hide-show-notification-area-icons-taskbar-windows-10-a.html
+# https://www.tenforums.com/tutorials/105189-enable-disable-taskbar-settings-windows-10-a.html
+# https://mymce.wordpress.com/2022/10/04/how-to-change-taskbar-position-via-registry-in-windows-10-11/
 
 function Invoke-TaskBarSearchTweak {
     # Write-Host 'TaskBar: Disabling Search: "Open on hover"'
@@ -27,22 +31,50 @@ function Invoke-TaskBarSearchTweak {
     # https://github.com/krlvm/BeautySearch
 }
 
-function Invoke-TaskBarTweaksApply {
+function Invoke-TaskBarIconsHide {
     Write-Host "TaskBar: Hiding TaskView"
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowTaskViewButton" -Value 0 -Type DWord
+
     Write-Host "TaskBar: Hiding System Icon: Meet Now"
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
     -Name "HideSCAMeetNow" -Value 1 -Type DWord
+
     Write-Host "TaskBar: Hiding System Icon: Action Center"
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "DisableNotificationCenter" -Value 1 -Type DWord
+}
 
+function Invoke-TaskBarAppearance {
+    $prefsBinary = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" -Name "Settings" -ErrorAction SilentlyContinue).Settings
+
+    Write-Host "TaskBar: Set    `"Taskbar location on screen`" -> `"Left`""
+    # 00 Left
+    # 01 Top
+    # 02 Right
+    # 03 Bottom
+    $prefsBinary[12] = 0x00
+
+    Write-Host "TaskBar: Enable `"Automatically hide the taskbar in desktop mode`""
+    $prefsBinary[8] = 0x03 # 2 - disable
+
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" `
+    -Name "Settings" -Value $prefsBinary -Type Binary
+}
+
+function Invoke-TaskBarTweaksApply {
     Write-Host "TaskBar: Disabling Immersive context menu"
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
     -Name "NoTrayContextMenu" -Value 1 -Type DWord
 
+    # A.K.A "Always show all icons and notifications on the taskbar" in "explorer shell:::{05d7b0f4-2121-4eff-bf6b-ed3f69b894d9}"
+    Write-Host "TaskBar: Enabling `"Always show all icons in the notification area`""
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
+    -Name "EnableAutoTray" -Value 0 -Type DWord
+
+    Invoke-TaskBarIconsHide
     Invoke-TaskBarSearchTweak
+    Invoke-TaskBarAppearance
 
     Invoke-RestartShell
 }
