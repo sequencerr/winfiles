@@ -46,16 +46,16 @@ function Install-WindowsUpdatesAndReboot {
     exit
 }
 
+<#
+
+.SYNOPSIS
+    Disables Windows Update
+
+.NOTES
+    Disabling Windows Update is not recommended. This is only for advanced users who know what they are doing.
+
+#>
 function Invoke-UpdatesDisable {
-    <#
-
-    .SYNOPSIS
-        Disables Windows Update
-
-    .NOTES
-        Disabling Windows Update is not recommended. This is only for advanced users who know what they are doing.
-
-    #>
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
@@ -81,13 +81,13 @@ function Invoke-UpdatesDisable {
     Write-Host "================================="
 }
 
+<#
+
+.SYNOPSIS
+    Resets Windows Update settings to default
+
+#>
 function Invoke-UpdatesEnable {
-    <#
-
-    .SYNOPSIS
-        Resets Windows Update settings to default
-
-    #>
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
