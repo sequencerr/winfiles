@@ -16,6 +16,7 @@ Get-ChildItem .\functions -File | ForEach-Object { . $_.FullName }
 Write-Host "Starting functions execution..."
 Install-WindowsUpdatesAndReboot "$($MyInvocation.MyCommand.Path)"
 Invoke-UpdatesDisable
+Invoke-PrivacyHarden
 Invoke-TaskManagerTweaksApply
 Invoke-AppsUninstall
 Invoke-StartMenuTweaksApply
