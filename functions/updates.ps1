@@ -1,7 +1,10 @@
 # https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
 # https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj574130(v=ws.11)
 function Install-WindowsUpdatesAndReboot {
-    PARAM($scriptPath)
+    PARAM(
+        [Parameter(Mandatory=$true)]
+        [String]$scriptPath
+    )
 
     Write-Host "Installing updates..."
     if (!(Test-Path "~\PowerShell-Help-Updates")) {
@@ -46,69 +49,43 @@ function Install-WindowsUpdatesAndReboot {
     exit
 }
 
-<#
+$services = @(
+    "BITS"
+    "wuauserv"
+)
 
-.SYNOPSIS
-    Disables Windows Update
-
-.NOTES
-    Disabling Windows Update is not recommended. This is only for advanced users who know what they are doing.
-
-#>
+# Disabling automatic Windows Updates is not recommended.
 function Invoke-UpdatesDisable {
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
+
     If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
     }
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
 
-    $services = @(
-        "BITS"
-        "wuauserv"
-    )
     foreach ($service in $services) {
-        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+        # -ErrorAction SilentlyContinue ignore a service doesn't exist
 
         Write-Host "Setting $service StartupType to Disabled"
-        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType "Disabled"
     }
     Write-Host "================================="
     Write-Host "---   Updates ARE DISABLED    ---"
     Write-Host "================================="
 }
 
-<#
-
-.SYNOPSIS
-    Resets Windows Update settings to default
-
-#>
 function Invoke-UpdatesEnable {
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
-
-    $services = @(
-        "BITS"
-        "wuauserv"
-    )
-
     foreach ($service in $services) {
-        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+        # -ErrorAction SilentlyContinue ignore a service doesn't exist
 
         Write-Host "Setting $service StartupType to Automatic"
-        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType "Automatic"
     }
+
     Write-Host "Enabling driver offering through Windows Update..."
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
@@ -126,23 +103,23 @@ function Invoke-UpdatesEnable {
     Write-Host "---  Windows Update Settings Reset to Default   ---"
     Write-Host "==================================================="
 
-    Start-Process -FilePath "secedit" -ArgumentList "/configure /cfg $env:WinDir\inf\defltbase.inf /db defltbase.sdb /verbose" -Wait
-    Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicyUsers" -Wait
-    Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicy" -Wait
-    Start-Process -FilePath "gpupdate" -ArgumentList "/force" -Wait
-    Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKCU:\SOFTWARE\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+    # Start-Process -FilePath "secedit" -ArgumentList "/configure /cfg $env:WinDir\inf\defltbase.inf /db defltbase.sdb /verbose" -Wait
+    # Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicyUsers" -Wait
+    # Start-Process -FilePath "cmd.exe" -ArgumentList "/c RD /S /Q $env:WinDir\System32\GroupPolicy" -Wait
+    # Start-Process -FilePath "gpupdate" -ArgumentList "/force" -Wait
+    # Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKCU:\SOFTWARE\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsSelfHost" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Policies" -Recurse -Force -ErrorAction SilentlyContinue
+    # Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
 
-    Write-Host "==================================================="
-    Write-Host "---  Windows Local Policies Reset to Default   ---"
-    Write-Host "==================================================="
+    # Write-Host "==================================================="
+    # Write-Host "---  Windows Local Policies Reset to Default   ---"
+    # Write-Host "==================================================="
 }
