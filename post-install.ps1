@@ -23,5 +23,6 @@ Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
 Invoke-ExplorerTweaksApply
 Invoke-VisualEffectsTweaksApply
+Invoke-PersonalizationTweaksApply
 
 Restart-Computer
