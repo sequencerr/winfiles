@@ -12,7 +12,7 @@ function Invoke-PerfomanceOptionsDisable {
 
     Write-Host 'Disable "Animate windows when minimizing and maximizing"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" `
-    -Name "MinAnimate" -Value 0 -Type DWord
+    -Name "MinAnimate" -Value "0" -Type String
 
     Write-Host 'Disable "Animations in the taskbar"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
@@ -51,14 +51,14 @@ function Invoke-PerfomanceOptionsDisable {
 
     Write-Host 'Disable "Show window contents while dragging"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
-    -Name "DragFullWindows" -Value 0 -Type DWord
+    -Name "DragFullWindows" -Value "0" -Type String
 
     Write-Host 'Disable "Slide open combo boxes"'
     Disable-UserPreference $UserPreferencesMask.ComboBoxAnimation
 
     Write-Host 'Enable  "Smooth edges of screen fonts"'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
-    -Name "FontSmoothing" -Value 2 -Type DWord
+    -Name "FontSmoothing" -Value "2" -Type String
 
     Write-Host 'Disable "Smooth-scroll list boxes"'
     Disable-UserPreference $UserPreferencesMask.ListBoxSmoothScrolling
