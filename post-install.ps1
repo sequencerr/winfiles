@@ -14,6 +14,7 @@ Get-ChildItem .\functions\util -File | ForEach-Object { . $_.FullName }
 Get-ChildItem .\functions -File | ForEach-Object { . $_.FullName }
 
 Write-Host "Starting functions execution..."
+Invoke-WUDO_P2P_Disable
 Install-WindowsUpdatesAndReboot "$($MyInvocation.MyCommand.Path)"
 Invoke-UpdatesDisable
 Invoke-PrivacyHarden
