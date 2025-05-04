@@ -2,7 +2,7 @@
 # https://www.elevenforum.com/t/enable-or-disable-font-smoothing-in-windows-11.8476
 # SystemPropertiesPerformance.exe
 
-function Invoke-PerfomanceOptionsDisable {
+function Invoke-VisualEffectsTweaksApply {
     Write-Host 'Must set appearance options to "Custom"'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" `
     -Name "VisualFXSetting" -Value 3 -Type DWord

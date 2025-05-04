@@ -22,6 +22,6 @@ Invoke-AppsUninstall
 Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
 Invoke-ExplorerTweaksApply
-Invoke-PerfomanceOptionsDisable
+Invoke-VisualEffectsTweaksApply
 
 Restart-Computer
