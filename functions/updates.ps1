@@ -17,7 +17,11 @@ function Install-WindowsUpdatesAndReboot {
     Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot # We'll reboot later if needed
     Delete-DeliveryOptimizationCache -Force
 
-    if (!(Get-WURebootStatus -Silent)) { return }
+    if (!(Get-WURebootStatus -Silent)) {
+        Write-Host "Updates finished. Restart is *not* required. Continuing..."
+        return
+    }
+    Write-Host "Updates finished. Restart is required. Registering the task..."
 
     # Just in case. Make sure the action is overwritten.
     if (Get-ScheduledTask -TaskName "ResumeWorkflow" -ErrorAction SilentlyContinue) {
