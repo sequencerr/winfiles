@@ -58,10 +58,19 @@ $services = @(
     "wuauserv"
 )
 
+# https://github.com/ChrisTitusTech/winutil/blob/48f1c715840477fdb024268c2db857d9e023621b/functions/public/Invoke-WPFUpdatesdisable.ps1#L16-L19
+# https://www.elevenforum.com/t/turn-on-or-off-windows-update-delivery-optimization-in-windows-11.3136/
+# S-1-5-20 — NetworkService
+# https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids
 function Invoke-WUDO_P2P_Disable {
     Write-Host 'Disable "Allow downloads from other PCs" (for Windows Updates)'
 
-    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" `
+    -Name "DODownloadMode" -Value 0 -Type DWord
+
+    # For SettingsApp local display.
+    Set-RegistryValue -Path "Registry::HKEY_USERS\S-1-5-20\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Settings" `
+    -Name "DownloadMode" -Value 0 -Type DWord
 }
 
 # Disabling automatic Windows Updates is not recommended.
