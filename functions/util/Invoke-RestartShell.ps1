@@ -22,7 +22,7 @@ function Invoke-RestartShell {
         $desktop = (New-Object -ComObject Shell.Application).NameSpace(0)
         $taskbarHandle = [Win32]::FindWindow("Shell_TrayWnd", $null)
         if ($desktop -and $taskbarHandle -ne [IntPtr]::Zero) {
-            Write-Output "Desktop environment should be initialized."
+            Write-Output "Desktop environment should be initialized.`n"
             break
         }
         Write-Host "Waititing for Explorer to complete initialization..."
