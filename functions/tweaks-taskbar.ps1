@@ -6,23 +6,23 @@
 
 function Invoke-TaskBarSearchTweak {
     # Write-Host 'TaskBar: Disabling Search: "Open on hover"'
-    # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
+    # Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
     # -Name "OpenOnHover" -Value 0 -Type DWord
     # Write-Host 'TaskBar: Disabling Search: "Show search highlights"'
-    # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
+    # Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds\DSB" `
     # -Name "ShowDynamicContent" -Value 0 -Type DWord
-    # # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" `
+    # # Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" `
     # # -Name "IsDynamicSearchBoxEnabled" -Value 0 -Type DWord
     Write-Host "TaskBar: Hiding Search"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
     -Name "SearchboxTaskbarMode" -Value 0 -Type DWord
 
     # https://www.howtogeek.com/224159/how-to-disable-bing-in-the-windows-10-start-menu/
     # https://www.supportyourtech.com/articles/how-to-remove-bing-from-windows-10-a-step-by-step-guide/
     Write-Host "TaskBar: Search: Removing Bing"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
     -Name "BingSearchEnabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "DisableSearchBoxSuggestions" -Value 1 -Type DWord
 
     # todo:
@@ -33,15 +33,15 @@ function Invoke-TaskBarSearchTweak {
 
 function Invoke-TaskBarIconsHide {
     Write-Host "TaskBar: Hiding TaskView"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowTaskViewButton" -Value 0 -Type DWord
 
     Write-Host "TaskBar: Hiding System Icon: Meet Now"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
     -Name "HideSCAMeetNow" -Value 1 -Type DWord
 
     Write-Host "TaskBar: Hiding System Icon: Action Center"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "DisableNotificationCenter" -Value 1 -Type DWord
 }
 
@@ -58,18 +58,18 @@ function Invoke-TaskBarAppearance {
     Write-Host "TaskBar: Enable `"Automatically hide the taskbar in desktop mode`""
     $prefsBinary[8] = 0x03 # 2 - disable
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" `
     -Name "Settings" -Value $prefsBinary -Type Binary
 }
 
 function Invoke-TaskBarTweaksApply {
     Write-Host "TaskBar: Disabling Immersive context menu"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
     -Name "NoTrayContextMenu" -Value 1 -Type DWord
 
     # A.K.A "Always show all icons and notifications on the taskbar" in "explorer shell:::{05d7b0f4-2121-4eff-bf6b-ed3f69b894d9}"
     Write-Host "TaskBar: Enabling `"Always show all icons in the notification area`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "EnableAutoTray" -Value 0 -Type DWord
 
     Invoke-TaskBarIconsHide

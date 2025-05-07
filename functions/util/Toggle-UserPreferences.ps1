@@ -41,7 +41,7 @@ function Toggle-UserPreference {
         $upm = [BitConverter]::GetBytes([BitConverter]::ToInt64($upm, 0) -band -bnot $userPreference)
     }
 
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" `
+    Set-RegistryValue -Path "HKCU:\Control Panel\Desktop" `
     -Name "UserPreferencesMask" -Value $upm -Type Binary
 }
 

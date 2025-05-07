@@ -10,19 +10,17 @@
 
 function Invoke-ExplorerStartDirectoryApply {
     # Set not to "Quick Access", but to "This PC" for fallback
-    Set-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "LaunchTo" -Value 1 -Type DWord
-
-    $regPath = "HKCU:\SOFTWARE\Classes\CLSID\{52205fd8-5dfb-447d-801a-d0b52f2e83e1}\shell\OpenNewWindow\command"
-    if (!(Test-Path $regPath)) { New-Item -Force -Path $regPath }
 
     $downloadsPath = (New-Object -ComObject Shell.Application).Namespace('shell:Downloads').Self.Path
     Write-Host "Setting File Explorer to Open to Custom Location by Default..."
     Write-Host "Using directory: `"$downloadsPath`""
 
-    Set-ItemProperty -Path $regPath `
+    $regPath = "HKCU:\SOFTWARE\Classes\CLSID\{52205fd8-5dfb-447d-801a-d0b52f2e83e1}\shell\OpenNewWindow\command"
+    Set-RegistryValue -Path $regPath `
     -Name "(Default)" -Value "Explorer `"$downloadsPath`"" -Type String
-    Set-ItemProperty -Path $regPath `
+    Set-RegistryValue -Path $regPath `
     -Name "DelegateExecute" -Value "" -Type String
 }
 
@@ -39,13 +37,13 @@ function Invoke-ExplorerPrivacyApply {
     # but also we'll apply config settings to be sure and for fallback
 
     Write-Host "Disable: Show recently opened items in Start, Jump Lists, and File Explorer"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "Start_TrackDocs" -Value 0 -Type DWord
     Write-Host "Disable: Show recently used files in Quick Access"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowRecent" -Value 0 -Type DWord
     Write-Host "Disable: Show frequently used folder in Quick access"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowFrequent" -Value 0 -Type DWord
 }
 
@@ -94,68 +92,67 @@ function Invoke-ExplorerAdvancedSettingsApply {
     # or "rundll32 shell32.dll,Options_RunDLL 7"
 
     Write-Host "Disable: `"Always show icons, never thumbnails`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "IconsOnly" -Value 0 -Type DWord
     Write-Host "Disable: `"Always show menus`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "AlwaysShowMenus" -Value 0 -Type DWord
     Write-Host "Enable:  `"Display file icon on thumbnails`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowTypeOverlay" -Value 1 -Type DWord
     Write-Host "Enable:  `"Display file size information in folder tips`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "FolderContentsInfoTip" -Value 1 -Type DWord
     Write-Host "Enable:  `"Display the full path in the title bar`" (on tabs)"
-    if (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CabinetState")) { New-Item -Force -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" `
     -Name "FullPath" -Value 1 -Type DWord
     Write-Host "Disable: `"Hidden files and folders`" -> `"Dont show hidden files, folders, or drives`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "Hidden" -Value 1 -Type DWord
     Write-Host "Disable: `"Hide empty drives`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideDrivesWithNoMedia" -Value 0 -Type DWord
     Write-Host "Disable: `"Hide extensions for known file types`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideFileExt" -Value 0 -Type DWord
     Write-Host "Enable:  `"Hide folder merge conflicts`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideMergeConflicts" -Value 1 -Type DWord
     Write-Host "Enable:  `"Hide protected operating system files (Recommended)`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowSuperHidden" -Value 1 -Type DWord
     Write-Host "Disable: `"Launch folder windows in a separate process`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "SeparateProcess" -Value 0 -Type DWord
     Write-Host "Disable: `"Restore previous folder windows at logon`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "PersistBrowsers" -Value 0 -Type DWord
     Write-Host "Enable:  `"Show drive letters`" (first)"
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowDriveLettersFirst" -Value 1 -Type DWord
     Write-Host "Enable:  `"Show encrypted or compressed NTFS files in color`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowEncryptCompressedColor" -Value 1 -Type DWord
     Write-Host "Enable:  `"Show pop-up description for folder and desktop items`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowInfoTip" -Value 1 -Type DWord
     Write-Host "Enable:  `"Show preview handlers in preview pane`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowPreviewHandlers" -Value 1 -Type DWord
     Write-Host "Enable:  `"Show status bar`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowStatusBar" -Value 1 -Type DWord
     Write-Host "Disable: `"Show sync provider notifications`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowSyncProviderNotifications" -Value 0 -Type DWord
     Write-Host "Disable: `"Use check boxes to select items`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "AutoCheckSelect" -Value 0 -Type DWord
     Write-Host "Disable: `"Use Sharing Wizard (Recommended)`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "SharingWizardOn" -Value 0 -Type DWord
     Write-Host "Enable:  `"When typing into list view`" -> `"Select the typed item in the view`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "TypeAhead" -Value 0
 }
 

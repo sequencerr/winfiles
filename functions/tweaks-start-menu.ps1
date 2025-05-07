@@ -41,8 +41,8 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
     foreach ($regAlias in @("HKLM", "HKCU")) {
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         New-Item -Path $basePath -Name "Explorer" -ErrorAction SilentlyContinue
-        Set-ItemProperty -Path "$basePath\Explorer" -Name "LockedStartLayout" -Value 1
-        Set-ItemProperty -Path "$basePath\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath
+        Set-RegistryValue -Path "$basePath\Explorer" -Name "LockedStartLayout" -Value 1
+        Set-RegistryValue -Path "$basePath\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath
     }
     Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\" `
         | Where-Object { $_.Name -like "*start.tilegrid*windows.data.curatedtilecollection*" } `
@@ -58,7 +58,7 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
     # # I'd just leave it be. Since we are doing empty StartMenu, don't bother with ability to pin back.
     # foreach ($regAlias in @("HKLM", "HKCU")) {
     #     $keyPath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows\Explorer"
-    #     Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
+    #     Set-RegistryValue -Path $keyPath -Name "LockedStartLayout" -Value 0
     # }
     # Invoke-RestartShell
 
@@ -74,17 +74,14 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
 # https://www.tenforums.com/tutorials/104828-enable-disable-recently-added-apps-start-menu-windows-10-a.html
 function Invoke-StartMenuRecenlyAddedDisable {
     Write-Host 'StartMenu: Disable "Recenly Added"'
-    if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer"
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "HideRecentlyAddedApps" -Value 1 -Type DWord
 }
 
 # https://www.tenforums.com/tutorials/24117-turn-off-app-suggestions-start-windows-10-a.html
 function Invoke-StartMenuAppSuggestionsDisable {
     Write-Host 'StartMenu: Disable "Show Suggestions"'
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-338388Enabled" -Value 0 -Type DWord
 }
 

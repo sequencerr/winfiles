@@ -56,6 +56,6 @@ function Invoke-TaskManagerTweaksApply {
     for (; $i -ne 9; ++$i) { $prefsBinary[464+56*$i] = $prefsBinary[464+56*0] + ($i-1)  }
     $prefsBinary[464+56*0] = $prefsBinary[464+56*($i-1)] + 1
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" `
     -Name "Preferences" -Value $prefsBinary -Type Binary
 }

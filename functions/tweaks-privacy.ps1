@@ -7,7 +7,7 @@ function Invoke-AppsExposeAdsIdDisable {
     # aka
     Write-Host 'Disable "Let apps use your advertising ID"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" `
     -Name "Enabled" -Value 0 -Type DWord
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" `
     -Name "Id" -ErrorAction SilentlyContinue
@@ -19,7 +19,7 @@ function Invoke-WebExposeLanguageListDisable {
     # aka
     Write-Host 'Disable "Let websites access my language list"'
 
-    Set-ItemProperty -Path "HKCU:\Control Panel\International\User Profile" `
+    Set-RegistryValue -Path "HKCU:\Control Panel\International\User Profile" `
     -Name "HttpAcceptLanguageOptOut" -Value 1 -Type DWord
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Internet Explorer\International" `
     -Name "AcceptLanguage" -ErrorAction SilentlyContinue
@@ -41,7 +41,7 @@ function Invoke-TrackAppLaunchesDisable {
     # aka
     Write-Host 'Disable "Let Windows track app launches"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "Start_TrackProgs" -Value 0 -Type DWord
 }
 
@@ -49,13 +49,13 @@ function Invoke-SettingsAppSuggestionsDisable {
     # Settings -> Privacy -> Windows permissions -> General -> Change privacy options -> ...
     Write-Host 'Disable "Show suggested content in the Settings app"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-338393Enabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-353694Enabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-353696Enabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-88000105Enabled" -Value 0 -Type DWord
 }
 
@@ -65,7 +65,7 @@ function Invoke-SettingsAppNotificationsDisable {
     # aka
     Write-Host 'Disable "Show notifications in the Settings app"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SystemSettings\AccountNotifications" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SystemSettings\AccountNotifications" `
     -Name "EnableAccountNotifications" -Value 0 -Type DWord
 }
 #endregion =================================
@@ -86,11 +86,11 @@ function Invoke-SpeechRecognitionPrivacyApply {
     -Name "Speech Recognition" -ErrorAction SilentlyContinue
 
     Write-Host 'Disable "Review documents and mail to improve accuracy"'
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Speech\Preferences" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech\Preferences" `
     -Name "EnableDocumentHarvesting" -Value 0 -Type DWord
 
     # Write-Host 'Disable "Enable voice activation"'
-    # Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Speech\Preferences" `
+    # Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech\Preferences" `
     # -Name "ModeForOff" -Value 1 -Type DWord
     # # 2 = Enable
 }
@@ -104,7 +104,7 @@ function Invoke-SpeechRecognitionPrivacyApply {
 function Invoke-SpeechRecognitionOnlineDisable {
     Write-Host 'Disable "Online speech recognition"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy" `
     -Name "HasAccepted" -Value 0 -Type DWord
 }
 #endregion =================================
@@ -116,15 +116,15 @@ function Invoke-SpeechRecognitionOnlineDisable {
 function Invoke-PersonalTypingDictionaryDisable {
     Write-Host 'Disable "Personal typing & inking dictionary" (it will be erased)'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Personalization\Settings" `
     -Name "AcceptedPrivacyPolicy" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Language" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Language" `
     -Name "Enabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" `
     -Name "RestrictImplicitTextCollection" -Value 1 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization" `
     -Name "RestrictImplicitInkCollection" -Value 1 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" `
     -Name "HarvestContacts" -Value 0 -Type DWord
 }
 #endregion =================================
@@ -145,16 +145,16 @@ function Invoke-TelemetrySwitchSetRequiredOnly {
     # Change Settings app switch value.
     # > Setting a value of 0 for "Security" applies to enterprise, EDU, IoT and server devices only.
     # > for other devices is equivalent to choosing a value of 1.
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack" `
     -Name "ShowedToastAtLevel" -Value $TelemetryLevel.Security -Type DWord
 
     # You can't edit switch value to "Optional" by default (it's grayed out),
     # unless policy(Group Policy one, not this Settings app registry key with "Policies" in name)
     # is set to "Optional"
     # but we don't need it, because "Optional" is actually full (all telemetry levels + optional), not just optional.
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" `
     -Name "AllowTelemetry" -Value $TelemetryLevel.Security -Type DWord
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" `
     -Name "MaxTelemetryAllowed" -Value $TelemetryLevel.Security -Type DWord
 
     # You can't fully disable telemetry in Windows 10 Home or Pro editions by changing switch value.
@@ -169,7 +169,7 @@ function Invoke-TelemetrySwitchSetRequiredOnly {
 function Invoke-TelemetryTypingDisable {
     Write-Host 'Disable "Improve inking and typing" (Don''t "Send optional inking and typing diagnostic data")'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Input\TIPC" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Input\TIPC" `
     -Name "Enabled" -Value 0 -Type DWord
 }
 
@@ -177,12 +177,12 @@ function Invoke-TelemetryTypingDisable {
 function Invoke-TelemetryTailoredDisable {
     Write-Host 'Disable "Tailored expreriences" (Don''t "Offer personalized ads based on diagnostic data")'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy" `
     -Name "TailoredExperiencesWithDiagnosticDataEnabled" -Value 0 -Type DWord
 
     # This will override previous setting.
     # (delete) = Enable
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" `
     -Name "DisableTailoredExperiencesWithDiagnosticData" -Value 1 -Type DWord
 }
 
@@ -190,7 +190,7 @@ function Invoke-TelemetryTailoredDisable {
 function Invoke-FeedbackNotificationDisable {
     Write-Host 'Disable "Feedback frequency" (Disallow Windows send notifications asking for my feedback)'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" `
     -Name "NumberOfSIUFInPeriod" -Value 0 -Type DWord
     Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" `
     -Name "PeriodInNanoSeconds" -ErrorAction SilentlyContinue
@@ -200,7 +200,7 @@ function Invoke-FeedbackNotificationDisable {
     # idk why here both, but it's kind of different a bit.
     # ...we have "Never" period, and a completely disabled feature.
     # (delete) = Enable
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" `
     -Name "DoNotShowFeedbackNotifications" -Value 1 -Type DWord
 }
 #endregion =================================
@@ -213,7 +213,7 @@ function Invoke-TimelinePrivacyPublishUserActivitiesDisable {
     # aka Policy "Allow publishing of User Activities"
     Write-Host 'Disable "Store my activity history on this device"'
 
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
     -Name "PublishUserActivities" -Value 0 -Type DWord
 }
 
@@ -224,7 +224,7 @@ function Invoke-TimelinePrivacyUploadUserActivitiesDisable {
     # aka Policy "Allow upload of User Activities"
     Write-Host 'Disable "Send my activity history to Microsoft"'
 
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
     -Name "UploadUserActivities" -Value 0 -Type DWord
 }
 
@@ -232,7 +232,7 @@ function Invoke-TimelinePrivacyUploadUserActivitiesDisable {
 function Invoke-TimelineDisable {
     Write-Host 'Disable "Timeline" feature altogether'
 
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
+    Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
     -Name "EnableActivityFeed" -Value 0 -Type DWord
 }
 
@@ -241,7 +241,7 @@ function Invoke-TimelineAppSuggestionsDisable {
     # aka Policy "Show suggestions in your timeline"
     Write-Host 'Disable "Show suggestions occasionally in Timeline"'
 
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
     -Name "SubscribedContent-353698Enabled" -Value 0 -Type DWord
 }
 #endregion =================================
@@ -288,15 +288,15 @@ function Invoke-PrivacyAppPermissionsDisable {
     Write-Host "Settings -> Privacy -> App Permissions -> ..."
 
     Write-Host "Disabling `"Voice activation`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
     -Name "AgentActivationEnabled" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
     -Name "AgentActivationOnLockScreenEnabled" -Value 0 -Type DWord
 
     Write-Host "Disabling `"Background apps`""
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
     -Name "BackgroundAppGlobalToggle" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" `
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" `
     -Name "GlobalUserDisabled" -Value 1 -Type DWord
 
     # Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore"
@@ -342,14 +342,14 @@ function Invoke-PrivacyAppPermissionsDisable {
         Write-Host "Disabling `"$name`""
 
         # Allow/Deny
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap" `
+        Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap" `
         -Name "Value" -Value "Deny" -Type String
-        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap" `
+        Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap" `
         -Name "Value" -Value "Deny" -Type String
 
         if (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap\NonPackaged")) { continue }
         Write-Host "Disabling `"$name`" for Desktop apps"
-        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap\NonPackaged" `
+        Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\$cap\NonPackaged" `
         -Name "Value" -Value "Deny" -Type String
     }
     Write-Host "Done."
