@@ -1,9 +1,10 @@
 function Invoke-EdgeBrowserUninstall {
     if (!(Test-Path -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge")) { Write-Host "Edge is not installed." -ForegroundColor Red; return }
 
+    # Retrieve beforehand. May be wiped.
     $pathEdgeExe = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe")."(Default)"
 
-    # needed for uninstaller
+    # Temporary needed for uninstaller(for next step in between this temp exe creation and deletion just after uninstaller)
     $pathEdgeUWP = "$env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
     New-Item "$pathEdgeUWP" -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     New-Item "$pathEdgeUWP\MicrosoftEdge.exe" -ErrorAction SilentlyContinue | Out-Null
