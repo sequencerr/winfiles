@@ -6,14 +6,21 @@ function Install-WindowsUpdatesAndReboot {
         [String]$scriptPath
     )
 
-    Write-Host "Installing updates..."
     if (!(Test-Path "~\PowerShell-Help-Updates")) {
+        Write-Host "Installing Help updates..."
         Update-Help -Force -ErrorAction SilentlyContinue
         New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
         Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
     }
-    Install-PackageProvider -Name NuGet -Force
-    Install-Module -Name PSWindowsUpdate -Force
+
+    if (!(Get-InstalledModule -Name "PSWindowsUpdate" -ErrorAction SilentlyContinue)) {
+        Write-Host 'Installing "NuGet" module provider...'
+        Install-PackageProvider -Name "NuGet" -Force
+
+        Write-Host 'Installing "PSWindowsUpdate" module...'
+        Install-Module -Name "PSWindowsUpdate" -Force
+    }
+    Write-Host "Installing updates..."
     Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot # We'll reboot later if needed
     Delete-DeliveryOptimizationCache -Force
 
