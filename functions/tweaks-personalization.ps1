@@ -22,4 +22,8 @@ function Invoke-PersonalizationTweaksApply {
     Write-Host 'Enable  "Do not display the lock screen"'
     Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" `
     -Name "NoLockScreen" -Value 1 -Type DWord
+
+    Invoke-LockScreenSuggestionsDisable
+    Invoke-WindowsSuggestionsDisable
+    Invoke-WelcomeExperienceSuggestionsDisable
 }

@@ -45,20 +45,6 @@ function Invoke-TrackAppLaunchesDisable {
     -Name "Start_TrackProgs" -Value 0 -Type DWord
 }
 
-function Invoke-SettingsAppSuggestionsDisable {
-    # Settings -> Privacy -> Windows permissions -> General -> Change privacy options -> ...
-    Write-Host 'Disable "Show suggested content in the Settings app"'
-
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-338393Enabled" -Value 0 -Type DWord
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-353694Enabled" -Value 0 -Type DWord
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-353696Enabled" -Value 0 -Type DWord
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-88000105Enabled" -Value 0 -Type DWord
-}
-
 function Invoke-SettingsAppNotificationsDisable {
     # "Show me notifications in the Settings app. When off,
     # required notifications are still shown."
@@ -235,15 +221,6 @@ function Invoke-TimelineDisable {
     Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" `
     -Name "EnableActivityFeed" -Value 0 -Type DWord
 }
-
-function Invoke-TimelineAppSuggestionsDisable {
-    # Settings -> System -> Multitasking -> Timeline -> "Show suggestions occasionally in Timeline"
-    # aka Policy "Show suggestions in your timeline"
-    Write-Host 'Disable "Show suggestions occasionally in Timeline"'
-
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-353698Enabled" -Value 0 -Type DWord
-}
 #endregion =================================
 
 function Invoke-PrivacyWindowsPermissionsDisable {
@@ -275,7 +252,7 @@ function Invoke-PrivacyWindowsPermissionsDisable {
 
     Write-Host "... -> Activity history -> ..."
     # "Timeline" is part of the "Task View"
-    Invoke-TimelineAppSuggestionsDisable
+    Invoke-TimelineSuggestionsDisable
     Invoke-TimelinePrivacyPublishUserActivitiesDisable
     Invoke-TimelinePrivacyUploadUserActivitiesDisable
     Invoke-TimelineDisable

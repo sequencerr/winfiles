@@ -1,4 +1,3 @@
-
 # https://quake.blog/configure-windows-11-start-menu-using-only-group-policy.html
 # https://stackoverflow.com/questions/75303803/how-to-remove-all-pinned-apps-in-windows-11-start-menu-using-powershell
 # https://superuser.com/questions/1704373/automatically-unpin-applications-every-logon
@@ -14,7 +13,6 @@
 # https://techcommunity.microsoft.com/discussions/windowspowershell/start-menu-unpin-shortcuts-via-powershell-script/2961993
 # https://superuser.com/a/1442733
 # https://learn.microsoft.com/en-us/windows/configuration/start/layout?tabs=gpo%2Cintune-11&pivots=windows-10
-
 function Invoke-StartMenuTilesRemove {
     if ((Get-CimInstance -Class Win32_OperatingSystem).Caption -Match "Windows 11") { Write-Host "Windows 11 isn't supported. yet"; return }
     Write-Host "StartMenu: Applying empty layout"
@@ -70,7 +68,6 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
     Invoke-RestartShell
 }
 
-
 # https://www.tenforums.com/tutorials/104828-enable-disable-recently-added-apps-start-menu-windows-10-a.html
 function Invoke-StartMenuRecenlyAddedDisable {
     Write-Host 'StartMenu: Disable "Recenly Added"'
@@ -78,15 +75,8 @@ function Invoke-StartMenuRecenlyAddedDisable {
     -Name "HideRecentlyAddedApps" -Value 1 -Type DWord
 }
 
-# https://www.tenforums.com/tutorials/24117-turn-off-app-suggestions-start-windows-10-a.html
-function Invoke-StartMenuAppSuggestionsDisable {
-    Write-Host 'StartMenu: Disable "Show Suggestions"'
-    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" `
-    -Name "SubscribedContent-338388Enabled" -Value 0 -Type DWord
-}
-
 function Invoke-StartMenuTweaksApply {
     Invoke-StartMenuRecenlyAddedDisable
-    Invoke-StartMenuAppSuggestionsDisable
+    Invoke-StartMenuSuggestionsDisable
     Invoke-StartMenuTilesRemove
 }
