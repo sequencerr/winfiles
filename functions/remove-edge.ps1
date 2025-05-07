@@ -1,17 +1,15 @@
 function Invoke-EdgeBrowserUninstall {
     if (!(Test-Path -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge")) { Write-Host "Edge is not installed." -ForegroundColor Red; return }
+    $UninstallCommand = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge").UninstallString + " --force-uninstall --delete-profile"
 
     # Retrieve beforehand. May be wiped.
     $pathEdgeExe = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe")."(Default)"
-
     # Temporary needed for uninstaller(for next step in between this temp exe creation and deletion just after uninstaller)
     $pathEdgeUWP = "$env:SystemRoot\SystemApps\Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
     New-Item "$pathEdgeUWP" -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     New-Item "$pathEdgeUWP\MicrosoftEdge.exe" -ErrorAction SilentlyContinue | Out-Null
 
-    $uninstallString = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge").UninstallString + " --force-uninstall --delete-profile"
-    Start-Process cmd.exe "/c $uninstallString" -WindowStyle Hidden -Wait
-
+    Start-Process cmd.exe "/c $UninstallCommand" -WindowStyle Hidden -Wait
     # EdgeUWP(Universal Windows Platform) is removed in latest patch of Windows. Before it broke Windows updates, if removal not handled correctly.
     Remove-Item "$pathEdgeUWP" -Recurse -ErrorAction SilentlyContinue | Out-Null
 
