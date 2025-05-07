@@ -42,7 +42,7 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         New-Item -Path $basePath -Name "Explorer" -ErrorAction SilentlyContinue
         Set-RegistryValue -Path "$basePath\Explorer" -Name "LockedStartLayout" -Value 1
-        Set-RegistryValue -Path "$basePath\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath
+        Set-RegistryValue -Path "$basePath\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath -Type String
     }
     Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\" `
         | Where-Object { $_.Name -like "*start.tilegrid*windows.data.curatedtilecollection*" } `
