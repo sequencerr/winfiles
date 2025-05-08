@@ -18,11 +18,11 @@ Invoke-WUDO_P2P_Disable
 Install-WindowsUpdatesAndReboot "$($MyInvocation.MyCommand.Path)"
 Invoke-UpdatesDisable
 Invoke-PrivacyHarden
-Invoke-TaskManagerTweaksApply
 Invoke-AppsUninstall
 Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
 Invoke-ExplorerTweaksApply
+Invoke-TaskManagerTweaksApply
 Invoke-VisualEffectsTweaksApply
 Invoke-PersonalizationTweaksApply
 

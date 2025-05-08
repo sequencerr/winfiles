@@ -1,43 +1,43 @@
 # https://superuser.com/questions/930195/force-windows-8-1-task-manager-to-always-show-more-details
 # https://www.reddit.com/r/pcmasterrace/comments/3oavq0/something_about_task_manager_that_grinds_my_gears/
 
-$signature = @"
-    [DllImport("user32.dll")]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
-"@
-$WinAPI = Add-Type -MemberDefinition $signature -Name "WinAPI" -Namespace "WinAPI" -PassThru
-
-Add-Type -AssemblyName System.Windows.Forms;
-
 function Invoke-TaskManagerPreferencesReset {
-    Stop-Process -Name "taskmgr" -Force -ErrorAction SilentlyContinue
-
-    Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager\Preferences" -Force -ErrorAction SilentlyContinue
-    $process = Start-Process "taskmgr.exe" -PassThru
-
-    do {
-        Start-Sleep -Milliseconds 200
-        $window = Get-Process -Id $process.Id -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }
-    } until ($window)
-
-    $WinAPI::SetForegroundWindow($window.MainWindowHandle) | Out-Null
-
-    [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
     Stop-Process -Name "taskmgr" -ErrorAction SilentlyContinue
+    Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager\Preferences" -Force -ErrorAction SilentlyContinue
 
-    if ($null -eq (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue).Preferences) {
-        Write-Host "Unable to get current TaskManager preferences" -ForegroundColor Red;
-        return
+    $process = Start-Process "taskmgr.exe" -PassThru -WindowStyle Minimized
+
+    # Not sure if window is really what triggers "Status" column to appear,
+    # but we need this delay, that way so this function won't bug out: jumping immediately to
+    # get registry key value code block, and while window is barely opened,
+    # it somehow gets the value(previous one?) (though we deleted the key)
+    # and after all, immediately returns.
+    for ($i = 0; $True; ++$i) {
+        $window = Get-Process -Id $process.Id -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }
+        if (!$window) {
+            Write-Progress -Activity 'Waiting for "taskmgr.exe" window handle to appear...' -Status "$($i * 50 / 1000)s"
+            Start-Sleep -Milliseconds 50
+        } else {
+            break
+        }
+    }
+
+    for ($i = 0; $True; ++$i) {
+        $prefsBinary = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue).Preferences
+        if (!$prefsBinary) {
+            Write-Progress -Activity 'Waiting for "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" to create...' -Status "$($i * 50 / 1000)s"
+            Start-Sleep -Milliseconds 50
+         } else {
+            Stop-Process -Name "taskmgr" -ErrorAction SilentlyContinue
+            return $prefsBinary
+        }
     }
 }
 
-function Invoke-TaskManagerTweaksApply {
+function TaskManager {
     # Make sure we aren't messing with current user-made custom preferences,
     # otherwise invalid settings will result same behaviour as Invoke-TaskManagerPreferencesReset
-    Invoke-TaskManagerPreferencesReset
-
-    $prefsBinary = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue).Preferences
-    if ($null -eq $prefsBinary) { Write-Host "Unable to get current TaskManager preferences" -ForegroundColor Red; return }
+    $prefsBinary = Invoke-TaskManagerPreferencesReset
 
     Write-Host 'Task Manager: Enable "More details"'
     $prefsBinary[28] = 0x00
@@ -53,9 +53,15 @@ function Invoke-TaskManagerTweaksApply {
     # Each column index must be reassigned to change single column position
     $i = 1
     $prefsBinary[464+56*0] = 6
-    for (; $i -ne 9; ++$i) { $prefsBinary[464+56*$i] = $prefsBinary[464+56*0] + ($i-1)  }
+    for (; $i -ne 9; ++$i) { $prefsBinary[464+56*$i] = $prefsBinary[464+56*0] + ($i-1) }
     $prefsBinary[464+56*0] = $prefsBinary[464+56*($i-1)] + 1
 
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" `
-    -Name "Preferences" -Value $prefsBinary -Type Binary
+    -Name "Preferences" -Value $prefsBinary -Type Binary -Force
+}
+
+# At ever first "detailed" launch, it seems, forcefully sets "Status" column.
+function Invoke-TaskManagerTweaksApply {
+    TaskManager
+    TaskManager
 }
