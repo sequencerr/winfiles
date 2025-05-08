@@ -19,8 +19,8 @@ Install-WindowsUpdatesAndReboot "$($MyInvocation.MyCommand.Path)"
 Install-HelpUpdates
 Invoke-UpdatesDisable
 
-Invoke-PrivacyHarden
 Invoke-AppsUninstall
+Invoke-PrivacyHarden
 Invoke-StartMenuTweaksApply
 Invoke-TaskBarTweaksApply
 Invoke-ExplorerTweaksApply
