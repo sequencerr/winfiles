@@ -72,6 +72,8 @@ $services = @(
 # S-1-5-20 — NetworkService
 # https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids
 function Invoke-WUDO_P2P_Disable {
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config") { return }
+
     Write-Host 'Disable "Allow downloads from other PCs" (for Windows Updates)'
 
     Set-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" `
