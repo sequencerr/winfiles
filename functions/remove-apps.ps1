@@ -134,8 +134,13 @@ function Invoke-AppsUninstall {
         foreach ($pkgObj in Get-WindowsPackage -Online) {
             $pkg = $pkgObj.PackageName
             if (!$pkg.StartsWith($pkgStart)) { continue }
-            Write-Host "Removing $pkg..."
-            Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+            try {
+                Write-Host "Removing $pkg..."
+                Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+            } catch {
+                # it bugs out sometimes. maybe next version removes previous.
+                if ("$_" -ne "The specified package is not valid Windows package.`r`n") { throw $_ }
+            }
         }
     }
 
