@@ -1,3 +1,12 @@
+function Install-HelpUpdates {
+    if (Test-Path "~\PowerShell-Help-Updates") { return }
+
+    Write-Host "Installing Help updates..."
+    Update-Help -Force -ErrorAction SilentlyContinue
+    New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
+    Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
+}
+
 # https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
 # https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/jj574130(v=ws.11)
 function Install-WindowsUpdatesAndReboot {
@@ -5,13 +14,6 @@ function Install-WindowsUpdatesAndReboot {
         [Parameter(Mandatory=$true)]
         [String]$scriptPath
     )
-
-    if (!(Test-Path "~\PowerShell-Help-Updates")) {
-        Write-Host "Installing Help updates..."
-        Update-Help -Force -ErrorAction SilentlyContinue
-        New-Item -ItemType "Directory" -Path "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
-        Save-Help -DestinationPath "~\PowerShell-Help-Updates" -ErrorAction SilentlyContinue
-    }
 
     if (!(Get-InstalledModule -Name "PSWindowsUpdate" -ErrorAction SilentlyContinue)) {
         Write-Host 'Installing "NuGet" module provider...'
