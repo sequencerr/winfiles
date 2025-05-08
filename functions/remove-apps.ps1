@@ -63,14 +63,6 @@ $optional = @(
 # https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-capabilities-package-servicing-command-line-options?view=windows-11#get-capabilities
 # DISM - Deployment Image Servicing and Management
 # DISM /Online /Remove-Capability /CapabilityName:Microsoft.Windows.WordPad~~~~0.0.1.0
-$lines = (DISM /Online /Get-Capabilities).Split("`r`n")
-$capabilities = @()
-for ($i = 8; $i -lt $lines.Length - 1 - 2; $i += 3) {
-    $capabilities += [PSCustomObject]@{
-        Identity = $lines[$i].Trim() -replace "Capability Identity : ", ""
-        State = $lines[$i + 1].Trim() -replace "State : ", ""
-    }
-}
 # $capabilities | ?{ $_.State -eq "Installed" }
 $caps = @(
     "App.StepsRecorder~~~~0.0.1.0"
@@ -124,6 +116,14 @@ function Invoke-AppsUninstall {
         Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
     }
 
+    $lines = (DISM /Online /Get-Capabilities).Split("`r`n")
+    $capabilities = @()
+    for ($i = 8; $i -lt $lines.Length - 1 - 2; $i += 3) {
+        $capabilities += [PSCustomObject]@{
+            Identity = $lines[$i].Trim() -replace "Capability Identity : ", ""
+            State = $lines[$i + 1].Trim() -replace "State : ", ""
+        }
+    }
     foreach ($cap in $caps) {
         if ($null -eq ($capabilities | Where-Object { $_.Identity -eq $cap -and $_.State -eq "Installed" })) { continue }
         DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
