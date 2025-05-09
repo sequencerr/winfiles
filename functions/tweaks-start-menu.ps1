@@ -37,8 +37,8 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
 
     # https://learn.microsoft.com/en-us/windows/configuration/start/layout?tabs=gpo%2Cintune-11&pivots=windows-10#deploy-the-start-layout-configuration
     foreach ($regAlias in @("HKLM", "HKCU")) {
-        Set-RegistryValue -Path "$regAlias:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "LockedStartLayout" -Value 1
-        Set-RegistryValue -Path "$regAlias:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath -Type String
+        Set-RegistryValue -Path "${regAlias}:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "LockedStartLayout" -Value 1
+        Set-RegistryValue -Path "${regAlias}:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "StartLayoutFile" -Value $layoutFilePath -Type String
     }
     Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\" `
         | Where-Object { $_.Name -like "*start.tilegrid*windows.data.curatedtilecollection*" } `
