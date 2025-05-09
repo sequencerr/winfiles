@@ -68,7 +68,7 @@ xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
 
 # https://www.tenforums.com/tutorials/104828-enable-disable-recently-added-apps-start-menu-windows-10-a.html
 function Invoke-StartMenuRecenlyAddedDisable {
-    Write-Host 'StartMenu: Disable "Recenly Added"'
+    Write-Host 'StartMenu: Disable "Recently Added"'
     Set-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" `
     -Name "HideRecentlyAddedApps" -Value 1 -Type DWord
 }
