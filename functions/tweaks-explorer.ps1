@@ -1,13 +1,5 @@
 # https://www.elevenforum.com/t/change-folder-to-open-file-explorer-to-by-default-in-windows-11.675/
 # https://learn.microsoft.com/en-us/answers/questions/1502040/how-to-correctly-find-the-downloads-folder-in-powe
-# https://www.winhelponline.com/blog/show-recently-used-files-in-quick-access-unchecked-automatically/
-# https://www.tenforums.com/tutorials/2712-add-remove-frequent-folders-quick-access-windows-10-a.html
-# https://msfn.org/board/topic/149556-registry-keys-that-control-explorer-folder-view-options/page/2/
-# https://stackoverflow.com/questions/4491999/configure-windows-explorer-folder-options-through-powershell
-# https://winaero.com/how-to-change-file-explorer-options-in-the-registry/
-# https://www.howtogeek.com/222057/how-to-remove-the-folders-from-this-pc-on-windows-10/
-# https://www.tenforums.com/tutorials/6015-add-remove-folders-pc-windows-10-a.html
-
 function Invoke-ExplorerStartDirectoryApply {
     # Set not to "Quick Access", but to "This PC" for fallback
     Set-RegistryValue "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
@@ -24,6 +16,8 @@ function Invoke-ExplorerStartDirectoryApply {
     -Name "DelegateExecute" -Value "" -Type String
 }
 
+# https://www.winhelponline.com/blog/show-recently-used-files-in-quick-access-unchecked-automatically/
+# https://www.tenforums.com/tutorials/2712-add-remove-frequent-folders-quick-access-windows-10-a.html
 function Invoke-ExplorerPrivacyApply {
     Write-Host "Removing from `"Quick access`" the `"Frequent Places Folder`" special shell folder..."
     Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HomeFolderDesktop\NameSpace\DelegateFolders\{3936E9E4-D92C-4EEE-A85A-BC16D5EA0819}" -Recurse -Force -ErrorAction SilentlyContinue
@@ -39,14 +33,18 @@ function Invoke-ExplorerPrivacyApply {
     Write-Host "Disable: Show recently opened items in Start, Jump Lists, and File Explorer"
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "Start_TrackDocs" -Value 0 -Type DWord
+
     Write-Host "Disable: Show recently used files in Quick Access"
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowRecent" -Value 0 -Type DWord
+
     Write-Host "Disable: Show frequently used folder in Quick access"
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowFrequent" -Value 0 -Type DWord
 }
 
+# https://www.howtogeek.com/222057/how-to-remove-the-folders-from-this-pc-on-windows-10/
+# https://www.tenforums.com/tutorials/6015-add-remove-folders-pc-windows-10-a.html
 function Invoke-ExplorerThisPCApply {
     Write-Host "Removing from `"This PC`" the `"3D Objects`"..."
     Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Force -ErrorAction SilentlyContinue
@@ -87,70 +85,92 @@ function Invoke-ExplorerThisPCApply {
     Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}" -Force -ErrorAction SilentlyContinue
 }
 
+# https://msfn.org/board/topic/149556-registry-keys-that-control-explorer-folder-view-options/page/2/
+# https://stackoverflow.com/questions/4491999/configure-windows-explorer-folder-options-through-powershell
+# https://winaero.com/how-to-change-file-explorer-options-in-the-registry/
+# The "Explorer" -> "View" tab -> "Options" -> "Folder Options" -> "View" -> "Advanced Settings" -> "Files and Folders"
+# or "rundll32 shell32.dll,Options_RunDLL 7"
 function Invoke-ExplorerAdvancedSettingsApply {
-    # The "Explorer" -> "View" tab -> "Options" -> "Folder Options" -> "View" -> "Advanced Settings" -> "Files and Folders"
-    # or "rundll32 shell32.dll,Options_RunDLL 7"
-
     Write-Host "Disable: `"Always show icons, never thumbnails`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "IconsOnly" -Value 0 -Type DWord
+
     Write-Host "Disable: `"Always show menus`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "AlwaysShowMenus" -Value 0 -Type DWord
+
     Write-Host "Enable:  `"Display file icon on thumbnails`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowTypeOverlay" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Display file size information in folder tips`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "FolderContentsInfoTip" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Display the full path in the title bar`" (on tabs)"
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" `
     -Name "FullPath" -Value 1 -Type DWord
+
     Write-Host "Disable: `"Hidden files and folders`" -> `"Dont show hidden files, folders, or drives`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "Hidden" -Value 1 -Type DWord
+
     Write-Host "Disable: `"Hide empty drives`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideDrivesWithNoMedia" -Value 0 -Type DWord
+
     Write-Host "Disable: `"Hide extensions for known file types`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideFileExt" -Value 0 -Type DWord
+
     Write-Host "Enable:  `"Hide folder merge conflicts`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "HideMergeConflicts" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Hide protected operating system files (Recommended)`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowSuperHidden" -Value 1 -Type DWord
+
     Write-Host "Disable: `"Launch folder windows in a separate process`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "SeparateProcess" -Value 0 -Type DWord
+
     Write-Host "Disable: `"Restore previous folder windows at logon`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "PersistBrowsers" -Value 0 -Type DWord
+
     Write-Host "Enable:  `"Show drive letters`" (first)"
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "ShowDriveLettersFirst" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Show encrypted or compressed NTFS files in color`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowEncryptCompressedColor" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Show pop-up description for folder and desktop items`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowInfoTip" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Show preview handlers in preview pane`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowPreviewHandlers" -Value 1 -Type DWord
+
     Write-Host "Enable:  `"Show status bar`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowStatusBar" -Value 1 -Type DWord
+
     Write-Host "Disable: `"Show sync provider notifications`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "ShowSyncProviderNotifications" -Value 0 -Type DWord
+
     Write-Host "Disable: `"Use check boxes to select items`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "AutoCheckSelect" -Value 0 -Type DWord
+
     Write-Host "Disable: `"Use Sharing Wizard (Recommended)`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "SharingWizardOn" -Value 0 -Type DWord
+
     Write-Host "Enable:  `"When typing into list view`" -> `"Select the typed item in the view`""
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
     -Name "TypeAhead" -Value 0
