@@ -1,9 +1,20 @@
 function Invoke-PersonalizationTweaksApply {
+    # https://www.tenforums.com/tutorials/5556-turn-off-transparency-effects-windows-10-a.html
+    # Settings app -> Personaliztion -> Colors -> ...
     Write-Host 'Enable OS Dark Theme'
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" `
-    -Name "AppsUseLightTheme" -Value 0 -Type DWord
+    -Name "AppsUseLightTheme"    -Value 0 -Type DWord
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" `
     -Name "SystemUsesLightTheme" -Value 0 -Type DWord
+
+    Write-Host 'Disable "Transparency Effects"'
+    Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" `
+    -Name "EnableTransparency" -Value 0 -Type DWord
+
+    Write-Host 'Disable "Show desktop icons"'
+    Set-RegistryValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" `
+    -Name "HideIcons" -Value 1 -Type DWord
+    Invoke-RestartShell
 
     # https://www.tenforums.com/tutorials/90172-enable-disable-changing-lock-screen-background-windows-10-a.html
     # https://www.elevenforum.com/t/enable-or-disable-desktop-background-in-windows-11.12556/
