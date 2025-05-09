@@ -126,8 +126,7 @@ function Invoke-AppsUninstall {
     }
     foreach ($cap in $caps) {
         if ($null -eq ($capabilities | Where-Object { $_.Identity -eq $cap -and $_.State -eq "Installed" })) { continue }
-        DISM /Online /Remove-Capability /CapabilityName:"$cap" /NoRestart
-        Write-Host "Removed $cap"
+        Convert-DISMtoProgress "Removing $cap..." "DISM /Online /Remove-Capability /CapabilityName:""$cap"" /NoRestart"
     }
 
     foreach ($pkgStart in $pkgsMatch) {
