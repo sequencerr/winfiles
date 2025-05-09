@@ -12,22 +12,40 @@ function Invoke-TaskManagerPreferencesReset {
     # get registry key value code block, and while window is barely opened,
     # it somehow gets the value(previous one?) (though we deleted the key)
     # and after all, immediately returns.
+    $stage = 'Waiting for "taskmgr.exe" window handle to appear...'
     for ($i = 0; $True; ++$i) {
         $window = Get-Process -Id $process.Id -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 }
         if (!$window) {
-            Write-Progress -Activity 'Waiting for "taskmgr.exe" window handle to appear...' -Status "$($i * 50 / 1000)s"
+            $time = "$(($i * 50 / 1000).ToString().PadRight(5, ' '))s"
+            Write-Progress -Activity "Resetting TaskManager preferences..." `
+                -PercentComplete 0 `
+                -Status "$time $stage"
+
             Start-Sleep -Milliseconds 50
         } else {
+            Write-Progress -Activity "Resetting TaskManager preferences..." `
+                -PercentComplete 70 `
+                -Status "Done. $stage"
+
             break
         }
     }
 
+    $stage = 'Waiting for "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" to create...'
     for ($i = 0; $True; ++$i) {
         $prefsBinary = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue).Preferences
         if (!$prefsBinary) {
-            Write-Progress -Activity 'Waiting for "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager" to create...' -Status "$($i * 50 / 1000)s"
+            $time = "$(($i * 50 / 1000).ToString().PadRight(5, ' '))s"
+            Write-Progress -Activity "Resetting TaskManager preferences..." `
+                -PercentComplete 70 `
+                -Status "$time $stage"
+
             Start-Sleep -Milliseconds 50
          } else {
+            Write-Progress -Activity "Resetting TaskManager preferences..." `
+                -PercentComplete 100 `
+                -Status "Done. $stage"
+
             Stop-Process -Name "taskmgr" -ErrorAction SilentlyContinue
             return $prefsBinary
         }
