@@ -264,13 +264,13 @@ function Invoke-PrivacyWindowsPermissionsDisable {
 function Invoke-PrivacyAppPermissionsDisable {
     Write-Host "Settings -> Privacy -> App Permissions -> ..."
 
-    Write-Host "Disabling `"Voice activation`""
+    Write-Host 'Disabling "Voice activation"'
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
     -Name "AgentActivationEnabled" -Value 0 -Type DWord
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" `
     -Name "AgentActivationOnLockScreenEnabled" -Value 0 -Type DWord
 
-    Write-Host "Disabling `"Background apps`""
+    Write-Host 'Disabling "Background apps"'
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" `
     -Name "BackgroundAppGlobalToggle" -Value 0 -Type DWord
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" `

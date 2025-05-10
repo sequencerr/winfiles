@@ -48,14 +48,14 @@ function Invoke-TaskBarIconsHide {
 function Invoke-TaskBarAppearance {
     $prefsBinary = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" -Name "Settings" -ErrorAction SilentlyContinue).Settings
 
-    Write-Host "TaskBar: Set    `"Taskbar location on screen`" -> `"Left`""
+    Write-Host 'TaskBar: Set    "Taskbar location on screen" -> "Left"'
     # 00 Left
     # 01 Top
     # 02 Right
     # 03 Bottom
     $prefsBinary[12] = 0x00
 
-    Write-Host "TaskBar: Enable `"Automatically hide the taskbar in desktop mode`""
+    Write-Host 'TaskBar: Enable "Automatically hide the taskbar in desktop mode"'
     $prefsBinary[8] = 0x03 # 2 - disable
 
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3" `
@@ -68,7 +68,7 @@ function Invoke-TaskBarTweaksApply {
     -Name "NoTrayContextMenu" -Value 1 -Type DWord
 
     # A.K.A "Always show all icons and notifications on the taskbar" in "explorer shell:::{05d7b0f4-2121-4eff-bf6b-ed3f69b894d9}"
-    Write-Host "TaskBar: Enabling `"Always show all icons in the notification area`""
+    Write-Host 'TaskBar: Enabling "Always show all icons in the notification area"'
     Set-RegistryValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" `
     -Name "EnableAutoTray" -Value 0 -Type DWord
 
