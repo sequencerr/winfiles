@@ -176,9 +176,19 @@ function Invoke-ExplorerAdvancedSettingsApply {
     -Name "TypeAhead" -Value 0
 }
 
+# https://answers.microsoft.com/en-us/windows/forum/all/windows-7-windows-explorer-lock-the-toolbars/a9e16957-d415-4208-ad06-f6752b4a999d
+# https://thegeekpage.com/remove-white-line-below-address-bar/
+# Fix white ribbon/line appearing in dark mode under the search bar
+function Invoke-ExplorerRibbonDisable {
+    Write-Host 'Disable "Lock the toolbars" (Remove white stripe)'
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Internet Explorer\Toolbar" `
+    -Name "Locked" -Value 1 -Type DWord
+}
+
 function Invoke-ExplorerTweaksApply {
     Invoke-ExplorerStartDirectoryApply
     Invoke-ExplorerThisPCApply
     Invoke-ExplorerPrivacyApply
     Invoke-ExplorerAdvancedSettingsApply
+    Invoke-ExplorerRibbonDisable
 }
