@@ -236,11 +236,25 @@ function Invoke-ExplorerContentIndexedDisable {
     [System.Environment]::SetEnvironmentVariable('Count', $null, 'User')
 }
 
+# https://youtu.be/ctMyvJsBSzI?t=1077
+# Make Windows faster Explorer for big media(and not) directories
+function Invoke-ExplorerDiscoveryDisable {
+    Write-Host 'Disable: "Automatic Folder Discovery" feature'
+    $regBase = "HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell"
+    Remove-Item -Path "$regBase\Bags" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path "$regBase\BagMRU" -Recurse -Force -ErrorAction SilentlyContinue
+    Set-RegistryValue -Path "$regBase\Bags\AllFolders\Shell" `
+    -Name "FolderType" -Value "NotSpecified" -Type String
+}
+
 function Invoke-ExplorerTweaksApply {
     Invoke-ExplorerStartDirectoryApply
     Invoke-ExplorerThisPCApply
     Invoke-ExplorerPrivacyApply
     Invoke-ExplorerAdvancedSettingsApply
     Invoke-ExplorerRibbonDisable
+    Invoke-ExplorerDiscoveryDisable
     Invoke-ExplorerContentIndexedDisable
+
+    Invoke-RestartShell
 }
