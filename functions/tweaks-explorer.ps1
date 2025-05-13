@@ -180,7 +180,7 @@ function Invoke-ExplorerAdvancedSettingsApply {
 # https://thegeekpage.com/remove-white-line-below-address-bar/
 # Fix white ribbon/line appearing in dark mode under the search bar
 function Invoke-ExplorerRibbonDisable {
-    Write-Host 'Disable "Lock the toolbars" (Remove white stripe)'
+    Write-Host 'Disable: "Lock the toolbars" (Remove white stripe)'
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Internet Explorer\Toolbar" `
     -Name "Locked" -Value 1 -Type DWord
 }
@@ -198,23 +198,29 @@ function Invoke-ExplorerRibbonDisable {
 # https://learn.microsoft.com/en-us/dotnet/api/system.io.file.setattributes?view=net-9.0
 # Explorer -> This PC -> "System Drive" aka "Disc C" Properties -> "General" Tab -> "Allow files on this drive to have contents indexed in addition to file properties" -> "Apply changes to drive C:\, subfolders and files"
 function Invoke-ExplorerContentIndexedDisable {
-    Write-Host "Disable: `"Allow files on C:\ drive to have contents indexed`" (Apply attributes flag to very each file)"
-    $jobRes = $null
-    $job = Start-Job -ScriptBlock { (Get-ChildItem -Path "$env:SystemDrive\" -Recurse -ErrorAction SilentlyContinue).Count }
+    $drive = "$env:SystemDrive\"
+    Write-Host "Disable: `"Allow files on '$drive' drive to have contents indexed`" (Apply attributes flag to very each file)"
 
-    Get-ChildItem -Path "$env:SystemDrive\" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $i = 0; $s = Get-Date }{
+    # https://stackoverflow.com/a/77846183/10941348
+    [System.Environment]::SetEnvironmentVariable('Count', 0, 'User')
+    $job = Start-Job -ScriptBlock {
+        Get-ChildItem -Path $Using:drive -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $i = 0 }{
+            if (++$i % 1000 -ne 0) { return }
+            [System.Environment]::SetEnvironmentVariable('Count', $i, 'User')
+        }
+        [System.Environment]::SetEnvironmentVariable('Count', $i, 'User')
+    }
+
+    Get-ChildItem -Path $drive -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $i = 0; $s = Get-Date }{
         if ($i++ % 1000 -eq 0) {
+            $count = [Int][System.Environment]::GetEnvironmentVariable('Count', 'User')
             $percent = $leftTime = 0
-            if ($job -ne $null -and $job.State -eq "Completed") {
-                $jobRes = Receive-Job -Job $job
-                Remove-Job -Job $job -Force
-                $job = $null
-            } elseif ($jobRes -ne $null) {
-                $percent = $i / $jobRes * 100
-                $leftTime = ((Get-Date) - $s).TotalSeconds / $i * ($jobRes - $i)
+            if ($count -gt $i) {
+                $percent = $i / $count * 100
+                $leftTime = ((Get-Date) - $s).TotalSeconds / $i * ($count - $i)
             }
             Write-Progress -Activity "Applying attribute..." -PercentComplete $percent -SecondsRemaining $leftTime `
-                -Status "[$($i.ToString().PadLeft(6, ' '))$(if ($jobRes) { "/$jobRes" } else { "/..." })] $($_.FullName)"
+                -Status "[$($i.ToString().PadLeft(6, ' '))/$("$(if($count){$count}else{"..."})".PadLeft(6, ' '))] $($_.FullName)"
         }
 
         try {
@@ -225,10 +231,9 @@ function Invoke-ExplorerContentIndexedDisable {
         }
     }
 
-    if ($job -ne $null) {
-        Stop-Job -Job $job
-        Remove-Job -Job $job -Force
-    }
+    Stop-Job -Job $job
+    Remove-Job -Job $job -Force
+    [System.Environment]::SetEnvironmentVariable('Count', $null, 'User')
 }
 
 function Invoke-ExplorerTweaksApply {
