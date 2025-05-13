@@ -185,6 +185,12 @@ function Invoke-ExplorerRibbonDisable {
     -Name "Locked" -Value 1 -Type DWord
 }
 
+# https://youtu.be/KjHfCDPfLdI?t=216 - Originally spotted in this video, author missunderstood the "Content Indexing" flags and "Indexing" as it is.
+# https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.askdavetaylor.com%2F4-blog-pics%2Fwindows-c-drive-properties.jpg
+# /\ but I believe it was called "Allow Indexing Service to index this disk for fast file searching" in that place before. (God knows what it actually meant)
+# https://www.webnots.com/how-to-customize-windows-search/
+# So this option doesn't really affect performance/storage, until you configure indexer generally.
+# But it's nice to have this script to uncheck everything in fast and verbose (default progress doesn't really give perspective on how much time left) way.
 # https://www.tenforums.com/tutorials/93736-allow-file-contents-properties-indexed-drive-windows.html
 # https://devblogs.microsoft.com/scripting/use-a-powershell-cmdlet-to-work-with-file-attributes/
 # https://web.archive.org/web/20190501162727/https://devblogs.microsoft.com/scripting/use-powershell-to-toggle-the-archive-bit-on-files/
