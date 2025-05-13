@@ -196,8 +196,9 @@ function Invoke-ExplorerRibbonDisable {
 # https://web.archive.org/web/20190501162727/https://devblogs.microsoft.com/scripting/use-powershell-to-toggle-the-archive-bit-on-files/
 # https://learn.microsoft.com/en-us/dotnet/api/system.io.fileattributes?view=net-9.0
 # https://learn.microsoft.com/en-us/dotnet/api/system.io.file.setattributes?view=net-9.0
-# Explorer -> This PC -> "System Drive" aka "Disc C" Properties -> "General" Tab -> "Allow files оп this drive to have contents indexed in addition to file properties" -> "Apply changes to drive C:\, subfolders and files"
+# Explorer -> This PC -> "System Drive" aka "Disc C" Properties -> "General" Tab -> "Allow files on this drive to have contents indexed in addition to file properties" -> "Apply changes to drive C:\, subfolders and files"
 function Invoke-ExplorerContentIndexedDisable {
+    Write-Host "Disable: `"Allow files on C:\ drive to have contents indexed`" (Apply attributes flag to very each file)"
     $jobRes = $null
     $job = Start-Job -ScriptBlock { (Get-ChildItem -Path "$env:SystemDrive\" -Recurse -ErrorAction SilentlyContinue).Count }
 
