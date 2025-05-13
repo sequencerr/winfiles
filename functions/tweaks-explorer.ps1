@@ -201,6 +201,8 @@ function Invoke-ExplorerContentIndexedDisable {
     $drive = "$env:SystemDrive\"
     Write-Host "Disable: `"Allow files on '$drive' drive to have contents indexed`" (Apply attributes flag to very each file)"
 
+    if ((Get-Item $drive).Attributes.HasFlag([System.IO.FileAttributes]::NotContentIndexed)) { return }
+
     # https://stackoverflow.com/a/77846183/10941348
     [System.Environment]::SetEnvironmentVariable('Count', 0, 'User')
     $job = Start-Job -ScriptBlock {
