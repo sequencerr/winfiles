@@ -9,6 +9,7 @@
 			"group": "none",
 			"command": "\
             sudo docker stop windows -t 5 2>/dev/null; \
+            sudo docker rm windows 2>/dev/null; \
             sudo docker run -it --rm \
 			    --device=/dev/kvm \
 			    --device=/dev/net/tun \
