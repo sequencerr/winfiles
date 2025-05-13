@@ -185,10 +185,50 @@ function Invoke-ExplorerRibbonDisable {
     -Name "Locked" -Value 1 -Type DWord
 }
 
+# https://www.tenforums.com/tutorials/93736-allow-file-contents-properties-indexed-drive-windows.html
+# https://devblogs.microsoft.com/scripting/use-a-powershell-cmdlet-to-work-with-file-attributes/
+# https://web.archive.org/web/20190501162727/https://devblogs.microsoft.com/scripting/use-powershell-to-toggle-the-archive-bit-on-files/
+# https://learn.microsoft.com/en-us/dotnet/api/system.io.fileattributes?view=net-9.0
+# https://learn.microsoft.com/en-us/dotnet/api/system.io.file.setattributes?view=net-9.0
+# Explorer -> This PC -> "System Drive" aka "Disc C" Properties -> "General" Tab -> "Allow files оп this drive to have contents indexed in addition to file properties" -> "Apply changes to drive C:\, subfolders and files"
+function Invoke-ExplorerContentIndexedDisable {
+    $jobRes = $null
+    $job = Start-Job -ScriptBlock { (Get-ChildItem -Path "$env:SystemDrive\" -Recurse -ErrorAction SilentlyContinue).Count }
+
+    Get-ChildItem -Path "$env:SystemDrive\" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $i = 0; $s = Get-Date }{
+        if ($i++ % 1000 -eq 0) {
+            $percent = $leftTime = 0
+            if ($job -ne $null -and $job.State -eq "Completed") {
+                $jobRes = Receive-Job -Job $job
+                Remove-Job -Job $job -Force
+                $job = $null
+            } elseif ($jobRes -ne $null) {
+                $percent = $i / $jobRes * 100
+                $leftTime = ((Get-Date) - $s).TotalSeconds / $i * ($jobRes - $i)
+            }
+            Write-Progress -Activity "Applying attribute..." -PercentComplete $percent -SecondsRemaining $leftTime `
+                -Status "[$($i.ToString().PadLeft(6, ' '))$(if ($jobRes) { "/$jobRes" } else { "/..." })] $($_.FullName)"
+        }
+
+        try {
+            [System.IO.File]::SetAttributes($_.FullName, $_.Attributes -bor [System.IO.FileAttributes]::NotContentIndexed)
+        } catch [System.UnauthorizedAccessException] {
+        } catch {
+            Write-Error $_
+        }
+    }
+
+    if ($job -ne $null) {
+        Stop-Job -Job $job
+        Remove-Job -Job $job -Force
+    }
+}
+
 function Invoke-ExplorerTweaksApply {
     Invoke-ExplorerStartDirectoryApply
     Invoke-ExplorerThisPCApply
     Invoke-ExplorerPrivacyApply
     Invoke-ExplorerAdvancedSettingsApply
     Invoke-ExplorerRibbonDisable
+    Invoke-ExplorerContentIndexedDisable
 }
