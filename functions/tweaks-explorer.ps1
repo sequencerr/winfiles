@@ -229,6 +229,7 @@ function Invoke-ExplorerContentIndexedDisable {
             [System.IO.File]::SetAttributes($_.FullName, $_.Attributes -bor [System.IO.FileAttributes]::NotContentIndexed)
         } catch [System.UnauthorizedAccessException] {
         } catch {
+            if ("$_" -match "^Exception calling `"SetAttributes`" with `"2`" argument\(s\): `"Could not find a part of the path '[^']+'.`"") { return }
             Write-Error $_
         }
     }
