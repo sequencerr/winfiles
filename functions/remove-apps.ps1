@@ -100,7 +100,7 @@ function Invoke-AppsUninstall {
         if ((Get-AppxPackage -Name $program).NonRemovable) { Write-Error "Program $program is `"NonRemovable`""; return }
         Write-Host "Removing $program..."
         Get-AppxPackage -Name $program | Remove-AppxPackage
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online
+        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online | Out-Null
     }
     $assoc = Get-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations"
     foreach ($ext in $assoc.GetSubKeyNames()) {
@@ -113,7 +113,7 @@ function Invoke-AppsUninstall {
         $featFound = Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $feat }
         if ($null -eq $featFound -or "Disabled" -eq $featFound.State) { continue }
         Write-Host "Removing $feat..."
-        Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart
+        Disable-WindowsOptionalFeature -Online -FeatureName "$feat" -NoRestart | Out-Null
     }
 
     $lines = (DISM /Online /Get-Capabilities).Split("`r`n")
@@ -135,7 +135,7 @@ function Invoke-AppsUninstall {
             if (!$pkg.StartsWith($pkgStart)) { continue }
             try {
                 Write-Host "Removing $pkg..."
-                Remove-WindowsPackage -Online -PackageName $pkg -NoRestart
+                Remove-WindowsPackage -Online -PackageName $pkg -NoRestart | Out-Null
             } catch {
                 # it bugs out sometimes. maybe next version removes previous.
                 if ("$_" -ne "The specified package is not valid Windows package.`r`n") { throw $_ }
