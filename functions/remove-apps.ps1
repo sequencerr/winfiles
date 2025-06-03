@@ -96,10 +96,11 @@ $pkgsMatch = @(
 
 function Invoke-AppsUninstall {
     foreach ($program in $programs) {
-        if ($null -eq (Get-AppxPackage -Name $program)) { continue }
-        if ((Get-AppxPackage -Name $program).NonRemovable) { Write-Error "Program $program is `"NonRemovable`""; return }
+        $pkg = Get-AppxPackage -Name $program
+        if ($null -eq $pkg) { continue }
+        if ($pkg.NonRemovable) { Write-Error "Program $program is `"NonRemovable`""; return }
         Write-Host "Removing $program..."
-        Get-AppxPackage -Name $program | Remove-AppxPackage
+        $pkg | Remove-AppxPackage
         Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $program | Remove-AppxProvisionedPackage -Online | Out-Null
     }
     $assoc = Get-Item -Path "HKLM:\SOFTWARE\Classes\SystemFileAssociations"
